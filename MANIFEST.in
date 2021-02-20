@@ -1,0 +1,5 @@
+include iris/public/css/*.css
+include iris/public/js/modules/*.js
+include iris/public/img/*.png
+include iris/public/img/*.ico
+recursive-include iris *.html

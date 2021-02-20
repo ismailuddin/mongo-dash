@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block head_scripts %}{% endblock %}
+    <link rel="shortcut icon" href="/public/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/public/css/main.css">
+    <link rel="stylesheet" href="/public/css/tailwind.css">
+    <title>MongoDB Visualisation</title>
+</head>
+
+<body>
+    <div class="h-screen flex flex-col">
+        {% block navbar %}{% endblock %}
+        {% block content %}{% endblock %}
+        {% block footer %}{% endblock %}
+    </div>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,30 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+ipython = "*"
+black = "*"
+pylint = "*"
+
+[packages]
+pandas = "*"
+nbsphinx = "*"
+recommonmark = "*"
+sphinx-material = "*"
+pytest = "*"
+pytest-cov = "*"
+Sphinx = "*"
+fastapi = "*"
+uvicorn = "*"
+motor = "*"
+typer = "*"
+aiofiles = "*"
+jinja2 = "*"
+
+[requires]
+python_version = "3.9"
+
+[pipenv]
+allow_prereleases = true

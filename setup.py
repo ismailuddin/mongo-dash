@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""The setup script."""
+
+import os
+from setuptools import find_packages
+from setuptools import setup
+import mongodb_viz
+
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, "README.md"), encoding="utf-8") as f:
+    long_description = f.read()
+
+setup(
+    name="mongodb_viz",
+    author="Ismail Uddin",
+    version=mongodb_viz.__version__,
+    author_email="Your email",
+    classifiers=[
+        "Development Status :: 2 - Pre-Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Natural Language :: English",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+    ],
+    description="Visualisation platform for MongoDB",
+    install_requires=[
+        "pandas"
+    ],
+    license="MIT license",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    include_package_data=True,
+    entry_points={"console_scripts": ["mongodb_viz=mongodb_viz.cli:app"]},
+    keywords="",
+    packages=find_packages(exclude=("tests")),
+    test_suite="tests",
+    url="https://www.github.com/ismailuddin/mongodb_viz",
+    zip_safe=False,
+)
