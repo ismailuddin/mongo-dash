@@ -1,11 +1,40 @@
 import React, { Component } from "react";
-import Pipeline from "./components/Pipeline";
+import Pipeline from "./components/PipelineStages";
+import TimeseriesLine from "./components/TimeseriesLine";
 import axios from "axios";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Header from "./components/Header";
+import Pipelines from './routes/Pipelines';
 
-export default class App extends Component {
+
+export default function App() {
+    return (
+        <Router basename="/dashboard">
+            <div className="w-full h-full">
+                <Header />
+                <div className="w-full h-full">
+                    <Switch>
+                        <Route path="/home"></Route>
+                        <Route path="/pipelines">
+                            <Pipelines />
+                        </Route>
+                    </Switch>
+                </div>
+            </div>
+        </Router>
+    );
+}
+
+class Other extends Component {
     state = {
         pipeline: "",
         collection: "",
+        data: [
+            {
+                id: 0,
+                data: [],
+            },
+        ],
     };
 
     componentDidMount() {}
@@ -16,18 +45,32 @@ export default class App extends Component {
 
     getData = () => {
         const { pipeline, collection } = this.state;
-        axios.post("/api/aggregate", {
-            collection,
-            stages: pipeline
-        }).then(({ data }) => {
-            console.log(data);
-        }).catch(err => {
-            console.error(err);s
-        })
-    }
+        axios
+            .post("/api/aggregate", {
+                collection,
+                stages: pipeline,
+            })
+            .then(({ data: values }) => {
+                const x = values.map((d) => new Date(d.timestamp));
+                const y = values.map((d) => d.value);
+                this.setState({
+                    data: [
+                        {
+                            x,
+                            y,
+                            type: "scatter",
+                            mode: "lines",
+                        },
+                    ],
+                });
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    };
 
     render() {
-        const { pipeline } = this.state;
+        const { pipeline, data } = this.state;
         return (
             <div className="h-full w-full">
                 <div
@@ -36,7 +79,7 @@ export default class App extends Component {
                 >
                     <h3 className="text-lg font-bold text-blue-900">MongoDB</h3>
                 </div>
-                <div className="p-6">
+                <div className="p-6 w-full">
                     <div className="rounded-sm shadow bg-white p-4">
                         <h3 className="text-lg font-semibold">Pipeline</h3>
                         <Pipeline value={pipeline} onChange={this.onChange} />
@@ -68,6 +111,7 @@ export default class App extends Component {
                         >
                             Get data
                         </button>
+                        <TimeseriesLine data={data} />
                     </div>
                 </div>
             </div>

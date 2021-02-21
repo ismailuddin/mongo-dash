@@ -4,8 +4,8 @@ images/
 .DS_Store
 data
 notebooks
-public/js/modules/*.js
-public/css/*.css
+mongodb_viz/public/js/modules/*.js
+mongodb_viz/public/css/*.css
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

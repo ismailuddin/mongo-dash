@@ -11,8 +11,8 @@ router = APIRouter()
 templates = Jinja2Templates(directory=os.path.join(PACKAGE_DIR, "templates"))
 
 
-@router.get("/", response_class=HTMLResponse)
-def home(request: Request):
+@router.get("/dashboard/{path:path}", response_class=HTMLResponse)
+def home(request: Request, path: str):
     print(PACKAGE_DIR)
     return templates.TemplateResponse(
         "general/home.html",

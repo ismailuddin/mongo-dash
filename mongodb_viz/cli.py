@@ -1,6 +1,8 @@
 import typer
 import uvicorn
 from .config import update_config
+from .database import initialise_dashboard_store
+from asyncio import get_event_loop
 
 app = typer.Typer()
 
@@ -15,6 +17,8 @@ def main(
         mongo_uri=mongo_uri,
         database_name=database_name
     )
+    loop = get_event_loop()
+    loop.run_until_complete(initialise_dashboard_store())
     from .server import app
     uvicorn.run(app, host=host, port=port)
 
