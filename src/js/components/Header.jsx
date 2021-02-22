@@ -12,11 +12,11 @@ export default function Header() {
                 <span className="ml-2 font-light">Visualiser</span>
             </h3>
             <NavLink
-                to="/home"
+                to="/dashboards"
                 activeClassName="text-green-600 border-green-600"
                 className="px-3 font-bold h-full flex items-center border-b-4 border-white hover:border-green-600 transition-colors duration-300"
             >
-                Dashboard
+                Dashboards
             </NavLink>
             <NavLink
                 to="/pipelines"

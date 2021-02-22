@@ -9,7 +9,12 @@ import PipelineStages from "../components/PipelineStages";
 export default function ViewPipeline({ reloadPipelines }) {
     const { pipelineId } = useParams();
     const [collections, setCollections] = useState([]);
-    const [pipeline, setPipeline] = useState({});
+    const [pipeline, setPipeline] = useState({
+        pipeline_id: null,
+        name: null,
+        collection: null,
+        stages: null
+    });
     const [errMsg, setErrMsg] = useState(null);
     const [successMsg, setSuccessMsg] = useState(null);
 
@@ -71,7 +76,7 @@ export default function ViewPipeline({ reloadPipelines }) {
                     }
                 />
             </div>
-            <label class="block text-sm font-medium text-blueGray-600 mb-1">
+            <label className="block text-sm font-medium text-blueGray-600 mb-1">
                 Pipeline stages
             </label>
             <PipelineStages

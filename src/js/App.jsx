@@ -4,17 +4,19 @@ import TimeseriesLine from "./components/TimeseriesLine";
 import axios from "axios";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Header from "./components/Header";
-import Pipelines from './routes/Pipelines';
-
+import Pipelines from "./routes/Pipelines";
+import Dashboards from "./routes/Dashboards";
 
 export default function App() {
-    return (
-        <Router basename="/dashboard">
+    return (    
+        <Router basename="/app">
             <div className="w-full h-full">
                 <Header />
                 <div className="w-full h-full">
                     <Switch>
-                        <Route path="/home"></Route>
+                        <Route path="/dashboards">
+                            <Dashboards />
+                        </Route>
                         <Route path="/pipelines">
                             <Pipelines />
                         </Route>

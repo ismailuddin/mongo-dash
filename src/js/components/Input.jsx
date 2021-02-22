@@ -4,7 +4,7 @@ function Text({ name, value, onChange }) {
     return (
         <div className="my-2">
             <label
-                for={name}
+                htmlFor={name}
                 className="block text-sm font-medium text-blueGray-600"
             >
                 {name}
@@ -24,7 +24,7 @@ function Select({ name, values, value, onChange }) {
     return (
         <div className="my-2">
             <label
-                for={name}
+                htmlFor={name}
                 className="block text-sm font-medium text-blueGray-600"
             >
                 {name}

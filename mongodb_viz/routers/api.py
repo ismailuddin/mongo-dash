@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Body, status, Response
 from fastapi.responses import JSONResponse
 from .. import database
 from ..config import Config
-from ..schemas import Pipeline, PipelineSchema, UpdatePipeline
+from ..schemas import Pipeline, CreatePipeline, Dashboard, CreateDashboard
 
 
 router = APIRouter()
@@ -35,7 +35,7 @@ async def get_collection_names(
 @router.post("/pipelines/register", status_code=status.HTTP_201_CREATED)
 async def register_pipeline(
     response: Response,
-    pipeline: PipelineSchema,
+    pipeline: CreatePipeline,
     db=Depends(database.get_admin_database),
 ):
     try:
@@ -60,7 +60,7 @@ async def register_pipeline(
 @router.post("/pipelines/edit", status_code=status.HTTP_201_CREATED)
 async def edit_pipeline(
     response: Response,
-    pipeline: PipelineSchema,
+    pipeline: CreatePipeline,
     db=Depends(database.get_admin_database),
 ):
     try:
@@ -71,7 +71,7 @@ async def edit_pipeline(
     await database.update_pipeline(
         db=db,
         pipeline_id=pipeline.pipeline_id,
-        pipeline=UpdatePipeline(
+        pipeline=Pipeline(
             name=pipeline.name,
             collection=pipeline.collection,
             stages=pipeline.stages,
@@ -98,3 +98,40 @@ async def get_pipeline(pipeline_id: str, db=Depends(database.get_admin_database)
         pipeline_id=pipeline_id
     )
     return pipeline
+
+
+@router.get("/dashboards/view_all")
+async def view_dashboards(db=Depends(database.get_admin_database)):
+    dashboards = await database.get_dashboards(
+        db=db,
+        database_name=Config.DATABASE_NAME
+    )
+    return dashboards
+
+
+@router.post("/dashboards/create", status_code=status.HTTP_201_CREATED)
+async def create_dashboard(
+    response: Response,
+    dashboard: CreateDashboard,
+    db=Depends(database.get_admin_database)
+):
+    inserted_id = await database.create_dashboard(
+        db=db,
+        dashboard=Dashboard(
+            database_name=Config.DATABASE_NAME,
+            name=dashboard.name,
+            date_created=datetime.utcnow(),
+            date_modified=datetime.utcnow(),
+        )
+    )
+    return inserted_id
+
+
+@router.get("/dashboards/view")
+async def get_pipeline(dashboard_id: str, db=Depends(database.get_admin_database)):
+    dashboard = await database.get_dashboard(
+        db=db,
+        database_name=Config.DATABASE_NAME,
+        dashboard_id=dashboard_id
+    )
+    return dashboard

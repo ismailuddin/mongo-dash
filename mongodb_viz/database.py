@@ -3,7 +3,7 @@ from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo import ReturnDocument
 from bson import ObjectId
 from .config import Config
-from .schemas import Pipeline, UpdatePipeline
+from .schemas import Pipeline, Dashboard
 
 
 async def get_admin_database() -> AsyncIOMotorDatabase:
@@ -81,12 +81,12 @@ async def get_pipeline(
 
 
 async def update_pipeline(
-    db: AsyncIOMotorDatabase, pipeline_id: str, pipeline: UpdatePipeline
+    db: AsyncIOMotorDatabase, pipeline_id: str, pipeline: Pipeline
 ):
     collection = db.Pipelines
     doc = await collection.find_one_and_update(
         {"_id": ObjectId(pipeline_id)},
-        {"$set": pipeline.dict()},
+        {"$set": pipeline.dict(exclude={"date_created"})},
         return_document=ReturnDocument.AFTER,
     )
     print(doc)
@@ -97,3 +97,38 @@ async def register_pipeline(db: AsyncIOMotorDatabase, pipeline: Pipeline):
     collection = db.Pipelines
     result = await collection.insert_one(pipeline.dict())
     return str(result.inserted_id)
+
+
+async def create_dashboard(db: AsyncIOMotorDatabase, dashboard: Dashboard):
+    collection = db.Dashboards
+    result = await collection.insert_one(dashboard.dict())
+    return str(result.inserted_id)
+
+
+async def get_dashboards(
+    db: AsyncIOMotorDatabase, database_name: str
+) -> List[dict]:
+    collection = db.Dashboards
+    dashboards = []
+    async for doc in collection.find({"database_name": database_name}):
+        dashboards.append(
+            {
+                "_id": str(doc["_id"]),
+                "name": doc["name"],
+                "database_name": doc["database_name"],
+                "date_created": doc["date_created"].isoformat(),
+                "date_modified": doc["date_modified"].isoformat(),
+            }
+        )
+    return dashboards
+
+
+async def get_dashboard(
+    db: AsyncIOMotorDatabase, database_name: str, dashboard_id: str
+) -> dict:
+    collection = db.Dashboards
+    dashboard = await collection.find_one(
+        {"database_name": database_name, "_id": ObjectId(dashboard_id)}
+    )
+    dashboard.update({"_id": str(dashboard["_id"])})
+    return dashboard
