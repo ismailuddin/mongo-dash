@@ -42,11 +42,12 @@ function DashboardsHome() {
     };
 
     return (
-        <div>
+        <>
+        <div className="bg-white p-4 border-b border-blueGray-200">
             <h2 className="text-3xl text-blueGray-800 font-bold mb-4">
                 Dashboards
             </h2>
-            <p className="text-blueGray-800 mb-4">
+            <p className="text-blueGray-800 mb-2">
                 Below is a list of your dashboards.
             </p>
             {successMsg !== null ? (
@@ -54,14 +55,15 @@ function DashboardsHome() {
                     {successMsg}
                 </div>
             ) : null}
-
+        </div>
+        <div className="p-4">
             <div className="grid grid-cols-6 my-4 gap-4">
                 {dashboards.map((dashboard) => (
                     <NavLink
                         key={dashboard._id}
                         to={`${match.path}/view/${dashboard._id}`}
                     >
-                        <div className="rounded-md border border-blueGray-200 bg-white p-2 shadow-lg">
+                        <div className="rounded-md border border-blueGray-200 bg-white p-2">
                             <h4 className="text-md font-bold inline-block mb-0">
                                 {dashboard.name}
                             </h4>
@@ -102,13 +104,14 @@ function DashboardsHome() {
                 <Button onClick={createDashboard}>Create dashboard</Button>
             </Modal>
         </div>
+        </>
     );
 }
 
 export default function Dashboards() {
     let match = useRouteMatch();
     return (
-        <div className="w-full h-full p-4">
+        <div className="w-full h-full">
             <Switch>
                 <Route path={`${match.path}/edit/:dashboardId`}>
                     <EditDashboard />

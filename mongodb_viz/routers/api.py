@@ -1,27 +1,22 @@
 from typing import Optional
 import json
+import uuid
 from datetime import datetime
 from fastapi import APIRouter, Depends, Body, status, Response
 from fastapi.responses import JSONResponse
 from .. import database
 from ..config import Config
-from ..schemas import Pipeline, CreatePipeline, Dashboard, CreateDashboard
+from ..schemas import (
+    Pipeline,
+    Dashboard,
+    Chart,
+    CreateEditPipeline,
+    CreateEditDashboard,
+    CreateEditChart,
+)
 
 
 router = APIRouter()
-
-
-@router.post("/aggregate")
-async def get_data(
-    pipeline: Pipeline, db=Depends(database.get_database)
-):
-    stages = json.loads(pipeline.stages)
-    docs = await database.run_aggregate_pipeline(
-        db=db,
-        collection=pipeline.collection,
-        pipeline_stages=stages,
-    )
-    return docs
 
 
 @router.get("/get_collections")
@@ -35,7 +30,7 @@ async def get_collection_names(
 @router.post("/pipelines/register", status_code=status.HTTP_201_CREATED)
 async def register_pipeline(
     response: Response,
-    pipeline: CreatePipeline,
+    pipeline: CreateEditPipeline,
     db=Depends(database.get_admin_database),
 ):
     try:
@@ -52,7 +47,7 @@ async def register_pipeline(
             database_name=Config.DATABASE_NAME,
             date_created=datetime.utcnow(),
             date_modified=datetime.utcnow(),
-        )
+        ),
     )
     return inserted_id
 
@@ -60,7 +55,7 @@ async def register_pipeline(
 @router.post("/pipelines/edit", status_code=status.HTTP_201_CREATED)
 async def edit_pipeline(
     response: Response,
-    pipeline: CreatePipeline,
+    pipeline: CreateEditPipeline,
     db=Depends(database.get_admin_database),
 ):
     try:
@@ -72,39 +67,57 @@ async def edit_pipeline(
         db=db,
         pipeline_id=pipeline.pipeline_id,
         pipeline=Pipeline(
+            database_name=Config.DATABASE_NAME,
             name=pipeline.name,
             collection=pipeline.collection,
             stages=pipeline.stages,
-            database_name=Config.DATABASE_NAME,
             date_modified=datetime.utcnow(),
-        )
+        ),
     )
     return
+
 
 @router.get("/pipelines/view_all")
 async def view_pipelines(db=Depends(database.get_admin_database)):
     pipelines = await database.get_pipelines(
-        db=db,
-        database_name=Config.DATABASE_NAME
+        db=db, database_name=Config.DATABASE_NAME
     )
     return pipelines
 
 
 @router.get("/pipelines/view")
-async def get_pipeline(pipeline_id: str, db=Depends(database.get_admin_database)):
+async def get_pipeline(
+    pipeline_id: str, db=Depends(database.get_admin_database)
+):
     pipeline = await database.get_pipeline(
-        db=db,
-        database_name=Config.DATABASE_NAME,
-        pipeline_id=pipeline_id
+        db=db, database_name=Config.DATABASE_NAME, pipeline_id=pipeline_id
     )
     return pipeline
+
+
+@router.get("/pipelines/run")
+async def run_pipeline(
+    pipeline_id: str,
+    db=Depends(database.get_database),
+    admin_db=Depends(database.get_admin_database),
+):
+    pipeline = await database.get_pipeline(
+        db=admin_db,
+        database_name=Config.DATABASE_NAME,
+        pipeline_id=pipeline_id,
+    )
+    data = await database.run_pipeline(
+        db=db,
+        collection=pipeline["collection"],
+        pipeline_stages=pipeline["stages"],
+    )
+    return data
 
 
 @router.get("/dashboards/view_all")
 async def view_dashboards(db=Depends(database.get_admin_database)):
     dashboards = await database.get_dashboards(
-        db=db,
-        database_name=Config.DATABASE_NAME
+        db=db, database_name=Config.DATABASE_NAME
     )
     return dashboards
 
@@ -112,8 +125,8 @@ async def view_dashboards(db=Depends(database.get_admin_database)):
 @router.post("/dashboards/create", status_code=status.HTTP_201_CREATED)
 async def create_dashboard(
     response: Response,
-    dashboard: CreateDashboard,
-    db=Depends(database.get_admin_database)
+    dashboard: CreateEditDashboard,
+    db=Depends(database.get_admin_database),
 ):
     inserted_id = await database.create_dashboard(
         db=db,
@@ -122,16 +135,58 @@ async def create_dashboard(
             name=dashboard.name,
             date_created=datetime.utcnow(),
             date_modified=datetime.utcnow(),
-        )
+        ),
     )
     return inserted_id
 
 
 @router.get("/dashboards/view")
-async def get_pipeline(dashboard_id: str, db=Depends(database.get_admin_database)):
+async def get_dashboard(
+    dashboard_id: str, db=Depends(database.get_admin_database)
+):
     dashboard = await database.get_dashboard(
-        db=db,
-        database_name=Config.DATABASE_NAME,
-        dashboard_id=dashboard_id
+        db=db, database_name=Config.DATABASE_NAME, dashboard_id=dashboard_id
     )
     return dashboard
+
+
+@router.post("/dashboards/add_chart")
+async def add_chart_to_dashboard(
+    dashboard_id: str,
+    chart: CreateEditChart,
+    db=Depends(database.get_admin_database)
+):
+    await database.add_chart_to_dashboard(
+        db=db,
+        dashboard_id=dashboard_id,
+        chart=Chart(
+            id=str(uuid.uuid4()),
+            name=chart.name,
+            pipeline_id=chart.pipeline_id,
+            x_axis=chart.x_axis,
+            y_axis=chart.y_axis,
+            grouping=chart.grouping,
+            date_created=datetime.utcnow(),
+            date_modified=datetime.utcnow(),
+        )
+    )
+
+
+@router.post("/dashboards/edit_chart")
+async def edit_dashboard_chart(
+    dashboard_id: str,
+    chart: CreateEditChart,
+    db=Depends(database.get_admin_database)
+):
+    await database.edit_dashboard_chart(
+        db=db,
+        dashboard_id=dashboard_id,
+        chart=Chart(
+            name=chart.name,
+            pipeline_id=chart.pipeline_id,
+            x_axis=chart.x_axis,
+            y_axis=chart.y_axis,
+            grouping=chart.grouping,
+            date_modified=datetime.utcnow(),
+        )
+    )

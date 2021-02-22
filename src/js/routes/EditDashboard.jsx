@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, NavLink, Link } from "react-router-dom";
+import {
+    useParams,
+    useRouteMatch,
+    NavLink,
+    Link,
+    Switch,
+    Route,
+} from "react-router-dom";
 import Button from "../components/Button";
+import AddChart from './AddChart';
 
 export default function EditDashboard() {
     const { dashboardId } = useParams();
-    const [dashboard, setDashboard] = useState({charts:[]});
+    let match = useRouteMatch();
+    const [dashboard, setDashboard] = useState({ charts: [] });
     const { charts } = dashboard;
-    console.log(dashboard);
 
     useEffect(() => {
         const getData = async () => {
@@ -20,38 +28,72 @@ export default function EditDashboard() {
     }, [dashboardId]);
 
     return (
-        <div className="">
-            <h2 className="text-3xl text-blueGray-800 font-bold mb-4">
-                <span className="font-light">Edit dashboard | </span>
-                {dashboard.name}
-            </h2>
-            <p className="text-blueGray-800 mb-4">
-                Below is your dashboard.
-            </p>
-            <div className="rounded-md bg-white px-2 flex items-center mb-4">
-                <Link to={`/dashboards/view/${dashboardId}`}>
-                    <Button>View dashboard</Button>
-                </Link>
-                <Button>Add chart</Button>
-                <Button>Edit dashboard name</Button>
+        <>
+            <div className="bg-white p-4 border-b border-blueGray-200">
+                <h2 className="text-3xl text-blueGray-800 font-bold mb-4">
+                    <span className="font-light">Edit dashboard | </span>
+                    {dashboard.name}
+                </h2>
+                <p className="text-blueGray-800 mb-4">
+                    Below is your dashboard.
+                </p>
+                <div className="rounded-md bg-white px-2 flex items-center mb-4">
+                    <Link to={`/dashboards/view/${dashboardId}`}>
+                        <Button>View dashboard</Button>
+                    </Link>
+                    <Button>Edit dashboard name</Button>
+                </div>
             </div>
-            <h3 className="text-2xl text-blueGray-800 font-bold mb-4">
-                Charts
-            </h3>
-            <div className="grid grid-cols-6 my-4 gap-4">
-                {charts.map((chart) => (
-                    <NavLink
-                        key=""
-                        to=""
-                    >
-                        <div className="rounded-md border border-blueGray-200 bg-white p-2 shadow-lg">
-                            <h4 className="text-md font-bold inline-block mb-0">
-                                {chart.name}
-                            </h4>
+            <div className="grid grid-cols-4 divide-x divide-blueGray-200 bg-white h-full">
+                <div>
+                    <div className="p-4">
+                        <h2 className="text-3xl text-blueGray-800 font-bold mb-4">
+                            Charts
+                        </h2>
+                        <p className="text-blueGray-800 mb-4">
+                            Below is a list of charts included in this
+                            dashboard.
+                        </p>
+                        <div className="my-4">
+                            <Link
+                                to={`${match.url}/charts/add`}
+                            >
+                                <Button>Add chart</Button>
+                            </Link>
                         </div>
-                    </NavLink>
-                ))}
+                    </div>
+                    <div className="border-t border-blueGray-200 divide-y divide-blueGray-200">
+                        {charts.map((chart) => (
+                            <NavLink
+                                key={chart.id_}
+                                to={`${match.url}/charts/${chart.id_}`}
+                                className="block border-l-4 border-white p-4 hover:bg-blueGray-50 transition-colors duration-300"
+                            >
+                                <div>
+                                    <h4 className="text-md text-blueGray-800 font-bold">
+                                        {chart.name}
+                                    </h4>
+                                </div>
+                            </NavLink>
+                        ))}
+                    </div>
+                </div>
+                <div className="col-span-3">
+                    <Switch>
+                        <Route path={`${match.url}/charts/add`}>
+                            <AddChart />
+                        </Route>
+                        <Route path={`${match.url}/charts/view/:chartId`}>
+                            View chart
+                        </Route>
+                        <Route path={`${match.url}`}>
+                            <div className="w-full h-full flex items-center justify-center bg-blueGray-100">
+                                Please select a chart
+                            </div>
+                        </Route>
+                    </Switch>
+                </div>
             </div>
-        </div>
+        </>
     );
 }

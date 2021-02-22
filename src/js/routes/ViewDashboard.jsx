@@ -18,17 +18,22 @@ export default function ViewDashboard() {
     }, [dashboardId]);
 
     return (
-        <div className="">
-            <h2 className="text-3xl text-blueGray-800 font-bold mb-4">
-                <span className="font-light">Dashboard | </span>
-                {dashboard.name}
-            </h2>
-            <p className="text-blueGray-800 mb-4">Below is your dashboard.</p>
-            <div className="rounded-md bg-white px-2 flex items-center">
-                <Link to={`/dashboards/edit/${dashboardId}`}>
-                    <Button>Edit dashboard</Button>
-                </Link>
+        <>
+            <div className="bg-white p-4 border-b border-blueGray-200">
+                <h2 className="text-3xl text-blueGray-800 font-bold mb-4">
+                    <span className="font-light">Dashboard | </span>
+                    {dashboard.name}
+                </h2>
+                <p className="text-blueGray-800 mb-4">Below is your dashboard.</p>
+                <div className="rounded-md bg-white px-2 flex items-center">
+                    <Link to={`/dashboards/edit/${dashboardId}`}>
+                        <Button>Edit dashboard</Button>
+                    </Link>
+                </div>
             </div>
-        </div>
+            <div className="p-4">
+
+            </div>
+        </>
     );
 }

@@ -28,6 +28,8 @@ export default function ViewPipeline({ reloadPipelines }) {
             setCollections(collectionsResult.data);
         };
         getData();
+        setSuccessMsg(null);
+        setErrMsg(null);
     }, [pipelineId]);
 
     const editPipeline = async () => {
