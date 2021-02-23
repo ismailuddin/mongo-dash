@@ -1,5 +1,5 @@
 ## Installation
-Install mongodb_viz package using `pip` from the command line:
+Install mongo_dash package using `pip` from the command line:
 
 ```shell
 $   pip install .

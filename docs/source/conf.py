@@ -14,12 +14,12 @@ import os
 import sys
 from datetime import datetime
 sys.path.insert(0, os.path.abspath('../../'))
-import mongodb_viz
+import mongo_dash
 
 # -- Project information -----------------------------------------------------
 
 year = datetime.utcnow().strftime("%Y")
-project = "mongodb_viz"
+project = "mongo_dash"
 copyright = year + ", Ismail Uddin"
 author = "Ismail Uddin"
 
@@ -58,7 +58,7 @@ exclude_patterns = []
 #
 html_theme = "sphinx_material"
 html_theme_options = {
-    "repo_url": "https://www.github.com/ismailuddin/mongodb_viz",
+    "repo_url": "https://www.github.com/ismailuddin/mongo_dash",
     "nav_title": "mongodb_viz - Python package",
     "repo_name": "mongodb_viz",
     "logo_icon": "&#xe869",

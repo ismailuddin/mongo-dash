@@ -1,4 +1,4 @@
-Welcome to mongodb_viz documentation!
+Welcome to mongo_dash documentation!
 =======================================================
 Visualisation platform for MongoDB
 

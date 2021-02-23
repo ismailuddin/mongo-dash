@@ -1,5 +1,5 @@
-include iris/public/css/*.css
-include iris/public/js/modules/*.js
-include iris/public/img/*.png
-include iris/public/img/*.ico
-recursive-include iris *.html
+include mongo_dash/public/css/*.css
+include mongo_dash/public/js/modules/*.js
+include mongo_dash/public/img/*.png
+include mongo_dash/public/img/*.ico
+recursive-include mongo_dash *.html

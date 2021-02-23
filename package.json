@@ -1,5 +1,5 @@
 {
-  "name": "mongodb-viz",
+  "name": "mongo-dash",
   "version": "1.0.0",
   "description": "MongoDB visualisation web app",
   "main": "Gulpfile.js",

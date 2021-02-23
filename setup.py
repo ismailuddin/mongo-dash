@@ -13,7 +13,7 @@ with open(os.path.join(this_directory, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="mongodb_viz",
+    name="mongo_dash",
     author="Ismail Uddin",
     version=mongodb_viz.__version__,
     author_email="Your email",
@@ -33,7 +33,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     include_package_data=True,
-    entry_points={"console_scripts": ["mongodb_viz=mongodb_viz.cli:app"]},
+    entry_points={"console_scripts": ["mongo_dash=mongo_dash.cli:app"]},
     keywords="",
     packages=find_packages(exclude=("tests")),
     test_suite="tests",
