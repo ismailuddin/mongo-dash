@@ -112,6 +112,8 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
 
     useEffect(() => {
         getChart();
+        setErrMsg(null);
+        setSuccessMsg(null);
     }, [location.key]);
 
     return (

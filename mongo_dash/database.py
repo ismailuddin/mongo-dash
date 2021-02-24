@@ -152,14 +152,13 @@ async def edit_dashboard_chart(
     db: AsyncIOMotorDatabase, dashboard_id: str, chart: Chart
 ):
     collection = db.Dashboards
+    chart_id = chart.id
+    chart = chart.dict(exclude={"date_created", "id"})
+    chart = {f"charts.$.{k}": v for k, v in chart.items()}
     doc = await collection.find_one_and_update(
-        {"_id": ObjectId(dashboard_id), "charts.id": chart.id},
+        {"_id": ObjectId(dashboard_id), "charts.id": chart_id},
         {
-            "$set": {
-                "charts.$": chart.dict(
-                    exclude={"date_created", "id"}
-                )
-            }
+            "$set": chart
         },
         return_document=ReturnDocument.AFTER,
     )

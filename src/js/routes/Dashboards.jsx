@@ -56,7 +56,7 @@ function DashboardsHome() {
                 </div>
             ) : null}
         </div>
-        <div className="p-4">
+        <div className="p-4 h-full">
             <div className="grid grid-cols-6 my-4 gap-4">
                 {dashboards.map((dashboard) => (
                     <NavLink
