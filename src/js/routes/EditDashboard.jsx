@@ -9,21 +9,21 @@ import {
     Route,
 } from "react-router-dom";
 import Button from "../components/Button";
-import AddChart from './AddChart';
+import AddChart from "./AddChart";
+import ViewChart from "./ViewChart";
 
 export default function EditDashboard() {
     const { dashboardId } = useParams();
     let match = useRouteMatch();
     const [dashboard, setDashboard] = useState({ charts: [] });
-    const { charts } = dashboard;
 
+    const getData = async () => {
+        const result = await axios.get(`/api/dashboards/view`, {
+            params: { dashboard_id: dashboardId },
+        });
+        setDashboard(result.data);
+    };
     useEffect(() => {
-        const getData = async () => {
-            const result = await axios.get(`/api/dashboards/view`, {
-                params: { dashboard_id: dashboardId },
-            });
-            setDashboard(result.data);
-        };
         getData();
     }, [dashboardId]);
 
@@ -55,24 +55,25 @@ export default function EditDashboard() {
                             dashboard.
                         </p>
                         <div className="my-4">
-                            <Link
-                                to={`${match.url}/charts/add`}
-                            >
+                            <Link to={`${match.url}/charts/add`}>
                                 <Button>Add chart</Button>
                             </Link>
                         </div>
                     </div>
                     <div className="border-t border-blueGray-200 divide-y divide-blueGray-200">
-                        {charts.map((chart) => (
+                        {dashboard.charts.map((chart) => (
                             <NavLink
-                                key={chart.id_}
-                                to={`${match.url}/charts/${chart.id_}`}
+                                key={chart.id}
+                                to={`${match.url}/charts/view/${chart.id}`}
                                 className="block border-l-4 border-white p-4 hover:bg-blueGray-50 transition-colors duration-300"
                             >
                                 <div>
                                     <h4 className="text-md text-blueGray-800 font-bold">
                                         {chart.name}
                                     </h4>
+                                    <p className="text-sm text-blueGray-600">
+                                        {chart.type_}
+                                    </p>
                                 </div>
                             </NavLink>
                         ))}
@@ -81,10 +82,16 @@ export default function EditDashboard() {
                 <div className="col-span-3">
                     <Switch>
                         <Route path={`${match.url}/charts/add`}>
-                            <AddChart />
+                            <AddChart
+                                dashboardId={dashboardId}
+                                reloadCharts={getData}
+                            />
                         </Route>
                         <Route path={`${match.url}/charts/view/:chartId`}>
-                            View chart
+                            <ViewChart
+                                dashboardId={dashboardId}
+                                reloadCharts={getData}
+                            />
                         </Route>
                         <Route path={`${match.url}`}>
                             <div className="w-full h-full flex items-center justify-center bg-blueGray-100">

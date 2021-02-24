@@ -33,6 +33,7 @@ class YAxis(BaseModel):
 class Chart(BaseModel):
     id: Optional[str]
     name: str
+    type_: str
     pipeline_id: str
     x_axis: XAxis
     y_axis: YAxis
@@ -59,7 +60,9 @@ class CreateEditDashboard(BaseModel):
 
 
 class CreateEditChart(BaseModel):
+    id: Optional[str]
     name: str
+    type_: str
     pipeline_id: str
     x_axis: XAxis
     y_axis: YAxis

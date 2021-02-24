@@ -37,6 +37,6 @@ setup(
     keywords="",
     packages=find_packages(exclude=("tests")),
     test_suite="tests",
-    url="https://www.github.com/ismailuddin/mongodb_viz",
+    url="https://www.github.com/ismailuddin/mongo_dash",
     zip_safe=False,
 )

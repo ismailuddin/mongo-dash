@@ -162,6 +162,7 @@ async def add_chart_to_dashboard(
         chart=Chart(
             id=str(uuid.uuid4()),
             name=chart.name,
+            type_=chart.type_,
             pipeline_id=chart.pipeline_id,
             x_axis=chart.x_axis,
             y_axis=chart.y_axis,
@@ -182,11 +183,27 @@ async def edit_dashboard_chart(
         db=db,
         dashboard_id=dashboard_id,
         chart=Chart(
+            id=chart.id,
             name=chart.name,
             pipeline_id=chart.pipeline_id,
+            type_=chart.type_,
             x_axis=chart.x_axis,
             y_axis=chart.y_axis,
             grouping=chart.grouping,
             date_modified=datetime.utcnow(),
         )
     )
+
+
+@router.get("/dashboards/charts/view")
+async def get_dashboard_chart(
+    dashboard_id: str,
+    chart_id: str,
+    db=Depends(database.get_admin_database)
+):
+    chart = await database.get_chart(
+        db=db,
+        dashboard_id=dashboard_id,
+        chart_id=chart_id,
+    )
+    return chart

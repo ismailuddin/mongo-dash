@@ -17,7 +17,7 @@ gulp.task("sass:tailwind", function () {
                 require("cssnano"),
             ])
         )
-        .pipe(gulp.dest("mongodb_viz/public/css/"));
+        .pipe(gulp.dest("mongo_dash/public/css/"));
 });
 
 gulp.task("sass", function () {
@@ -35,7 +35,7 @@ gulp.task("sass", function () {
                 require("cssnano"),
             ])
         )
-        .pipe(gulp.dest("mongodb_viz/public/css/"));
+        .pipe(gulp.dest("mongo_dash/public/css/"));
 });
 
 gulp.task("sass:watch", function () {

@@ -137,6 +137,17 @@ async def add_chart_to_dashboard(
     return doc
 
 
+async def get_chart(
+    db: AsyncIOMotorDatabase, dashboard_id: str, chart_id: str
+):
+    collection = db.Dashboards
+    doc = await collection.find_one(
+        {"_id": ObjectId(dashboard_id), "charts.id": chart_id},
+        {"_id": 0, "charts.$": 1}
+    )
+    return doc["charts"][0]
+
+
 async def edit_dashboard_chart(
     db: AsyncIOMotorDatabase, dashboard_id: str, chart: Chart
 ):

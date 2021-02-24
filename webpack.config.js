@@ -6,7 +6,7 @@ const config = {
     main: './src/js/index.js',
   },
   output: {
-    path: path.resolve(__dirname, 'mongodb_viz/public/js/modules/'),
+    path: path.resolve(__dirname, 'mongo_dash/public/js/modules/'),
     filename: '[name].js'
   },
   module: {

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Input from "../components/Input";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Button from "../components/Button";
 import TimeseriesLine from "../components/TimeseriesLine";
 
-export default function AddChart({ dashboardId, reloadCharts }) {
+export default function ViewChart({ dashboardId, reloadCharts }) {
     const location = useLocation();
+    const { chartId } = useParams();
+    const [chart, setChart] = useState({});
     const [chartName, setChartName] = useState("");
     const [pipelineId, setPipelineId] = useState(null);
     const [chartType, setChartType] = useState("TimeseriesLine");
@@ -21,13 +23,27 @@ export default function AddChart({ dashboardId, reloadCharts }) {
     const [errMsg, setErrMsg] = useState(null);
     const [successMsg, setSuccessMsg] = useState(null);
 
+    const getChart = async () => {
+        try {
+            getPipelines();
+            const result = await axios.get("/api/dashboards/charts/view", {
+                params: { chart_id: chartId, dashboard_id: dashboardId }
+            });
+            setChart(result.data);
+            setChartName(result.data.name);
+            setChartType(result.data.type_);
+            setPipelineId(result.data.pipeline_id);
+            getPipeline(result.data.pipeline_id);
+            getPlotData(result.data.pipeline_id);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const getPipelines = async () => {
         try {
             const result = await axios.get("/api/pipelines/view_all");
             setPipelines(result.data);
-            setPipelineId(result.data[0]._id);
-            getPipeline(result.data[0]._id);
-            getPlotData(result.data[0]._id);
         } catch (error) {
             console.error(error);
         }
@@ -65,11 +81,11 @@ export default function AddChart({ dashboardId, reloadCharts }) {
             setErrMsg("Error running pipeline!");
         }
     };
-
-    const createChart = async () => {
+    const editChart = async () => {
         try {
-            await axios.post("/api/dashboards/add_chart",
+            await axios.post("/api/dashboards/edit_chart",
                 {
+                    id: chartId,
                     name: chartName,
                     pipeline_id: pipelineId,
                     type_: "TimeseriesLine",
@@ -95,13 +111,13 @@ export default function AddChart({ dashboardId, reloadCharts }) {
     };
 
     useEffect(() => {
-        getPipelines();
+        getChart();
     }, [location.key]);
 
     return (
         <div className="p-4">
             <h2 className="text-3xl text-blueGray-800 font-bold mb-4">
-                Add chart
+                <span className="font-light">Chart | </span> {chart.name}
             </h2>
             <p className="text-blueGray-800 mb-4">
                 Fill in the details below to add a chart.
@@ -173,7 +189,7 @@ export default function AddChart({ dashboardId, reloadCharts }) {
             <div className="mb-2">
                 <TimeseriesLine data={plotData} />
             </div>
-            <Button onClick={createChart}>Save chart</Button>
+            <Button onClick={editChart}>Edit chart</Button>
         </div>
     );
 }
