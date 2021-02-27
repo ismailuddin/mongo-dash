@@ -40,15 +40,15 @@ export default function Pipelines() {
                         </Link>
                     </div>
                 </div>
-                <div className="border-t border-blueGray-200 divide-y divide-blueGray-200">
+                <div className="border-t border-blueGray-200">
                     {pipelines.map((pipeline) => (
                         <NavLink
                             key={pipeline._id}
                             to={`${match.path}/view/${pipeline._id}`}
                             activeClassName="border-green-600"
-                            className="block border-l-4 border-white p-4 hover:bg-blueGray-50 transition-colors duration-300"
+                            className="block border-l-4 border-white hover:bg-blueGray-50 transition-colors duration-300"
                         >
-                            <div>
+                            <div className="border-b border-blueGray-200 p-4">
                                 <h4 className="text-md text-blueGray-800 font-bold mb-2">
                                     {pipeline.name}
                                 </h4>
@@ -75,7 +75,7 @@ export default function Pipelines() {
                     ))}
                 </div>
             </div>
-            <div className="col-span-3">
+            <div className="col-span-3 overflow-y-scroll">
                 <Switch>
                     <Route path={`${match.path}/add`}>
                         <AddPipeline />

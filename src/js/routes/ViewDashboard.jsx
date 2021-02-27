@@ -37,7 +37,7 @@ export default function ViewDashboard() {
             </div>
             <div className="p-4 grid grid-cols-12 gap-4">
                 {dashboard.charts.map((chart, i) => (
-                    <div className="p-3 bg-white col-span-6">
+                    <div className="p-3 bg-white col-span-6 rounded-md">
                         <Chart key={chart.id} chart={chart} />
                     </div>
                 ))}

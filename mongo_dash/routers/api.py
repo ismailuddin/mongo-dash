@@ -98,6 +98,8 @@ async def get_pipeline(
 @router.get("/pipelines/run")
 async def run_pipeline(
     pipeline_id: str,
+    limit: int = 2_000,
+    from_timestamp: datetime = None,
     db=Depends(database.get_database),
     admin_db=Depends(database.get_admin_database),
 ):
@@ -110,6 +112,8 @@ async def run_pipeline(
         db=db,
         collection=pipeline["collection"],
         pipeline_stages=pipeline["stages"],
+        from_timestamp=from_timestamp,
+        limit=limit
     )
     return data
 

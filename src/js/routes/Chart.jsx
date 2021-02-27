@@ -11,6 +11,7 @@ export default function Chart({ chart }) {
             const { data } = await axios.get("/api/pipelines/run", {
                 params: {
                     pipeline_id: chart.pipeline_id,
+                    // from_timestamp: new Date("November 10, 2020")
                 },
             });
             const groupedData = [];
@@ -39,8 +40,7 @@ export default function Chart({ chart }) {
     }, [location.key]);
     return (
         <div>
-            <h4 className="font-semibold text-sm">{chart.name}</h4>
-            
+            <h4 className="font-semibold text-md mb-0">{chart.name}</h4>
             <TimeseriesLine data={plotData} />
             {errMsg !== null ? (
                 <div className="rounded-md p-4 bg-rose-200 my-2 text-red-800 text-sm">

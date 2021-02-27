@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Input from "../components/Input";
 import Button from "../components/Button";
-import PipelineStages from "../components/PipelineStages";
+import PipelineStagesEditor from "../components/PipelineStagesEditor";
 
 
 
@@ -68,7 +68,7 @@ export default function AddPipeline() {
             >
                 Pipeline stages
             </label>
-            <PipelineStages
+            <PipelineStagesEditor
                 value={pipelineStages}
                 onChange={v => setPipelineStages(v)}
             />

@@ -3,12 +3,14 @@ import axios from "axios";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useParams } from "react-router-dom";
-import PipelineStages from "../components/PipelineStages";
+import PipelineStagesEditor from "../components/PipelineStagesEditor";
+import PipelinePreview from "../components/PipelinePreview";
 
 
 export default function ViewPipeline({ reloadPipelines }) {
     const { pipelineId } = useParams();
     const [collections, setCollections] = useState([]);
+    const [pipelineResult, setPipelineResult] = useState("");
     const [pipeline, setPipeline] = useState({
         pipeline_id: null,
         name: null,
@@ -50,6 +52,21 @@ export default function ViewPipeline({ reloadPipelines }) {
             }
         }
     }
+    const previewPipeline = async () => {
+        try {
+            const { data } = await axios.get("/api/pipelines/run", {
+                params: {
+                    pipeline_id: pipelineId,
+                    limit: 5
+                },
+            });
+            setPipelineResult(JSON.stringify(data, null, 1));
+            setErrMsg(null);
+        } catch (error) {
+            console.error(error);
+            setErrMsg("Error running pipeline!");
+        }
+    }
 
     return (
         <div className="p-4">
@@ -81,9 +98,8 @@ export default function ViewPipeline({ reloadPipelines }) {
             <label className="block text-sm font-medium text-blueGray-600 mb-1">
                 Pipeline stages
             </label>
-            <PipelineStages
+            <PipelineStagesEditor
                 value={pipeline.stages}
-                onChange={(v) => setPipelineStages(v)}
                 onChange={(v) =>
                     setPipeline({ ...pipeline, stages: v })
                 }
@@ -98,7 +114,16 @@ export default function ViewPipeline({ reloadPipelines }) {
                     {successMsg}
                 </div>
             ) : null}
-            <Button onClick={editPipeline}>Edit pipeline</Button>
+            <div className="flex mb-4">
+                <Button onClick={editPipeline}>Update pipeline</Button>
+                <Button onClick={previewPipeline}>Preview pipeline</Button>
+            </div>
+            <h4 className="text-xl text-blueGray-800 font-bold mb-4">
+                Pipeline preview
+            </h4>
+            <PipelinePreview
+                value={pipelineResult}
+            />
         </div>
     );
 }

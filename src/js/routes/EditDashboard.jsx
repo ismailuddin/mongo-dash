@@ -60,14 +60,15 @@ export default function EditDashboard() {
                             </Link>
                         </div>
                     </div>
-                    <div className="border-t border-blueGray-200 divide-y divide-blueGray-200">
+                    <div className="border-t border-blueGray-200">
                         {dashboard.charts.map((chart) => (
                             <NavLink
                                 key={chart.id}
                                 to={`${match.url}/charts/view/${chart.id}`}
-                                className="block border-l-4 border-white p-4 hover:bg-blueGray-50 transition-colors duration-300"
+                                activeClassName="border-green-600"
+                                className="block border-l-4 border-white hover:bg-blueGray-50 transition-colors duration-300"
                             >
-                                <div>
+                                <div className="p-4 border-b border-blueGray-200">
                                     <h4 className="text-md text-blueGray-800 font-bold">
                                         {chart.name}
                                     </h4>

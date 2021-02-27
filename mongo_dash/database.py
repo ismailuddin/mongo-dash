@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from typing import List
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from fastapi.encoders import jsonable_encoder
@@ -35,10 +36,19 @@ async def run_pipeline(
     db: AsyncIOMotorDatabase,
     collection: str,
     pipeline_stages: str,
+    from_timestamp: datetime = None,
+    limit: int = None
 ) -> list:
     collection = db.get_collection(collection)
     pipeline_stages = json.loads(pipeline_stages)
-    pipeline_stages.append({"$limit": 2_000})
+    if from_timestamp is not None:
+        pipeline_stages.append({
+            "$match": {
+                "x": {"$gte": from_timestamp}
+            }
+        })
+    if limit is not None:
+        pipeline_stages.append({"$limit": limit})
     pipeline_stages.append({"$project": {"_id": 0}})
     documents = []
     async for doc in collection.aggregate(pipeline_stages):
