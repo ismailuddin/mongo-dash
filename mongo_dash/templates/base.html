@@ -11,12 +11,8 @@
     <title>MongoDB Visualisation</title>
 </head>
 
-<body>
-    <div class="h-full flex flex-col">
-        {% block navbar %}{% endblock %}
-        {% block content %}{% endblock %}
-        {% block footer %}{% endblock %}
-    </div>
+<body class="h-screen bg-blueGray-100">
+    {% block content %}{% endblock %}
     {% block scripts %}{% endblock %}
 </body>
 

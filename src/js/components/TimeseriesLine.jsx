@@ -5,6 +5,9 @@ function TimeseriesLine({ data }) {
     return (
         <div className="w-full">
             <Plot
+                config={{
+                    displayModeBar: false,
+                }}
                 data={data}
                 useResizeHandler={true}
                 layout={{

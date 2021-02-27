@@ -6,7 +6,7 @@
 import os
 from setuptools import find_packages
 from setuptools import setup
-import mongodb_viz
+import mongo_dash
 
 this_directory = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(this_directory, "README.md"), encoding="utf-8") as f:
@@ -15,7 +15,7 @@ with open(os.path.join(this_directory, "README.md"), encoding="utf-8") as f:
 setup(
     name="mongo_dash",
     author="Ismail Uddin",
-    version=mongodb_viz.__version__,
+    version=mongo_dash.__version__,
     author_email="Your email",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",

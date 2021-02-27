@@ -11,7 +11,7 @@ export default function PipelineStages({ value, onChange}) {
                 mode="json"
                 theme="github"
                 width="100%"
-                height="150px"
+                height="300px"
                 value={value}
                 onChange={onChange}
                 fontSize={14}

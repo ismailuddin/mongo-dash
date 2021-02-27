@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, useRouteMatch, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Button from "../components/Button";
 import Chart from "./Chart";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
 
 export default function ViewDashboard() {
     const { dashboardId } = useParams();
-    const [dashboard, setDashboard] = useState({charts: []});
+    const [dashboard, setDashboard] = useState(null);
 
     useEffect(() => {
         const getData = async () => {
@@ -17,10 +19,12 @@ export default function ViewDashboard() {
         };
         getData();
     }, [dashboardId]);
-
+    if (dashboard == null) {
+        return null;
+    }
     return (
         <>
-            <div className="bg-white p-4 border-b border-blueGray-200 flex justify-between h-full">
+            <div className="bg-white p-4 border-b border-blueGray-200 flex justify-between">
                 <h2 className="text-3xl text-blueGray-800 font-bold leading-normal">
                     <span className="font-light">Dashboard | </span>
                     {dashboard.name}
@@ -32,9 +36,9 @@ export default function ViewDashboard() {
                 </div>
             </div>
             <div className="p-4 grid grid-cols-12 gap-4">
-                {dashboard.charts.map(chart => (
-                    <div className="col-span-4 rounded-md bg-white p-3">
-                        <Chart chart={chart} />
+                {dashboard.charts.map((chart, i) => (
+                    <div className="p-3 bg-white col-span-6">
+                        <Chart key={chart.id} chart={chart} />
                     </div>
                 ))}
             </div>

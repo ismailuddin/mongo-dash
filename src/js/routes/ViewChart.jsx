@@ -66,16 +66,21 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
                     pipeline_id: pipelineId,
                 },
             });
-            const x = data.map((d) => d.x);
-            const y = data.map((d) => d.y);
-            setPlotData([
-                {
+            const groupedData = [];
+            const uniqueKeys = [...new Set(data.map(d => d.grouping))];
+            uniqueKeys.map(key => {
+                const filtered = data.filter(d => d.grouping == key);
+                const x = filtered.map((d) => d.x);
+                const y = filtered.map((d) => d.y);
+                groupedData.push({
                     x,
                     y,
                     type: "scatter",
                     mode: "lines",
-                },
-            ]);
+                    name: key
+                });
+            })
+            setPlotData(groupedData);
             setErrMsg(null);
         } catch (error) {
             setErrMsg("Error running pipeline!");
