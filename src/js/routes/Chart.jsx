@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TimeseriesLine from "../components/TimeseriesLine";
+import Button from "../components/Button";
+import PuffLoader from "react-spinners/PuffLoader";
 
 export default function Chart({ chart }) {
+    const now = new Date();
     const [plotData, setPlotData] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [timeFilter, setTimeFilter] = useState(now.setDate(now.getDate() - 1));
     const [errMsg, setErrMsg] = useState(null);
     const [successMsg, setSuccessMsg] = useState(null);
     const getPlotData = async () => {
         try {
+            setLoading(true);
             const { data } = await axios.get("/api/pipelines/run", {
                 params: {
                     pipeline_id: chart.pipeline_id,
-                    // from_timestamp: new Date("November 10, 2020")
+                    from_timestamp: timeFilter
                 },
             });
             const groupedData = [];
@@ -27,21 +33,57 @@ export default function Chart({ chart }) {
                 })
             });
             setPlotData(groupedData);
+            setLoading(false);
             setErrMsg(null);
         } catch (error) {
             console.error(error);
             setErrMsg("Error running pipeline!");
+            setLoading(false);
         }
     };
     useEffect(() => {
         getPlotData();
         setErrMsg(null);
         setSuccessMsg(null);
-    }, [location.key]);
+    }, [location.key, timeFilter]);
     return (
-        <div>
-            <h4 className="font-semibold text-md mb-0">{chart.name}</h4>
-            <TimeseriesLine data={plotData} />
+        <div className="group h-full">
+            <div className="flex justify-between items-center">
+                <h4 className="font-semibold text-md mb-0">{chart.name}</h4>
+                <div className="group-hover:opacity-100 opacity-0 flex gap-x-1 transition-opacity duration-300">
+                    <Button.GreyXS onClick={() => setTimeFilter(null)}>
+                        -/-
+                    </Button.GreyXS>
+                    <Button.GreyXS onClick={() => setTimeFilter(now.setHours(now.getHours() - 1))}>
+                        1 h
+                    </Button.GreyXS>
+                    <Button.GreyXS onClick={() => setTimeFilter(now.setDate(now.getDate() - 1))}>
+                        1 d
+                    </Button.GreyXS>
+                    <Button.GreyXS onClick={() => setTimeFilter(now.setDate(now.getDate() - 7))}>
+                        1 wk
+                    </Button.GreyXS>
+                    <Button.GreyXS onClick={() => setTimeFilter(now.setDate(now.getDate() - 28))}>
+                        1 mo
+                    </Button.GreyXS>
+                    <Button.GreyXS onClick={() => setTimeFilter(now.setDate(now.getDate() - 84))}>
+                        3 mo
+                    </Button.GreyXS>
+                </div>
+            </div>
+            {loading && (
+                <div className="flex w-full justify-center h-full py-14 items-center">
+                    <PuffLoader color={"#22C55E"} loading={loading} size={80} />
+                </div>
+            )}
+            {!loading && plotData.length > 0 && <TimeseriesLine data={plotData} />}
+            {plotData.length == 0 && (
+                <div className="py-24 flex items-center justify-center">
+                    <h4 className="text-lg text-blueGray-400 font-semibold">
+                        No data found within this time period!
+                    </h4>
+                </div>
+            )}
             {errMsg !== null ? (
                 <div className="rounded-md p-4 bg-rose-200 my-2 text-red-800 text-sm">
                     {errMsg}

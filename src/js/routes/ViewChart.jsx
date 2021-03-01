@@ -196,7 +196,7 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
             <div className="mb-2">
                 <TimeseriesLine data={plotData} />
             </div>
-            <Button onClick={editChart}>Edit chart</Button>
+            <Button.Primary onClick={editChart}>Edit chart</Button.Primary>
         </div>
     );
 }

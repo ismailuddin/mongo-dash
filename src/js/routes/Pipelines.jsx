@@ -36,7 +36,7 @@ export default function Pipelines() {
                     </p>
                     <div className="my-4">
                         <Link to={`${match.path}/add`}>
-                            <Button>Add pipeline</Button>
+                            <Button.Primary>Add pipeline</Button.Primary>
                         </Link>
                     </div>
                 </div>

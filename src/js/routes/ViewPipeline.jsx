@@ -54,11 +54,10 @@ export default function ViewPipeline({ reloadPipelines }) {
     }
     const previewPipeline = async () => {
         try {
-            const { data } = await axios.get("/api/pipelines/run", {
-                params: {
-                    pipeline_id: pipelineId,
-                    limit: 5
-                },
+            const { data } = await axios.post("/api/pipelines/run_arbitrary", {
+                name: pipeline.name,
+                collection: pipeline.collection,
+                stages: pipeline.stages
             });
             setPipelineResult(JSON.stringify(data, null, 1));
             setErrMsg(null);
@@ -115,8 +114,8 @@ export default function ViewPipeline({ reloadPipelines }) {
                 </div>
             ) : null}
             <div className="flex mb-4">
-                <Button onClick={editPipeline}>Update pipeline</Button>
-                <Button onClick={previewPipeline}>Preview pipeline</Button>
+                <Button.Primary onClick={editPipeline}>Update pipeline</Button.Primary>
+                <Button.Primary onClick={previewPipeline}>Preview pipeline</Button.Primary>
             </div>
             <h4 className="text-xl text-blueGray-800 font-bold mb-4">
                 Pipeline preview

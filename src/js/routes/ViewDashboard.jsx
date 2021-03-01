@@ -31,7 +31,7 @@ export default function ViewDashboard() {
                 </h2>
                 <div className="rounded-md bg-white px-2 flex items-center">
                     <Link to={`/dashboards/edit/${dashboardId}`}>
-                        <Button>Edit dashboard</Button>
+                        <Button.Primary>Edit dashboard</Button.Primary>
                     </Link>
                 </div>
             </div>

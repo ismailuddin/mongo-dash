@@ -82,9 +82,9 @@ export default function AddPipeline() {
                     {successMsg}
                 </div>
             ) : null}
-            <Button onClick={registerPipeline}>
+            <Button.Primary onClick={registerPipeline}>
                 Register pipeline
-            </Button>
+            </Button.Primary>
         </div>
     );
 }

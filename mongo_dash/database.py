@@ -37,16 +37,32 @@ async def run_pipeline(
     collection: str,
     pipeline_stages: str,
     from_timestamp: datetime = None,
-    limit: int = None
+    limit: int = None,
 ) -> list:
     collection = db.get_collection(collection)
     pipeline_stages = json.loads(pipeline_stages)
     if from_timestamp is not None:
-        pipeline_stages.append({
-            "$match": {
-                "x": {"$gte": from_timestamp}
-            }
-        })
+        pipeline_stages.append(
+            {"$match": {"x": {"$gte": from_timestamp.isoformat()}}}
+        )
+    if limit is not None:
+        pipeline_stages.append({"$sort": {"x": -1}})
+        pipeline_stages.append({"$limit": limit})
+    pipeline_stages.append({"$project": {"_id": 0}})
+    documents = []
+    async for doc in collection.aggregate(pipeline_stages):
+        documents.append(doc)
+    return documents
+
+
+async def run_arbitrary_pipeline(
+    db: AsyncIOMotorDatabase,
+    collection: str,
+    pipeline_stages: str,
+    limit: int = 5,
+) -> list:
+    collection = db.get_collection(collection)
+    pipeline_stages = json.loads(pipeline_stages)
     if limit is not None:
         pipeline_stages.append({"$limit": limit})
     pipeline_stages.append({"$project": {"_id": 0}})
@@ -135,6 +151,18 @@ async def get_dashboard(
     return dashboard
 
 
+async def edit_dashboard_name(
+    db: AsyncIOMotorDatabase, dashboard_id: str, name: str
+):
+    collection = db.Dashboards
+    doc = await collection.find_one_and_update(
+        {"_id": ObjectId(dashboard_id)},
+        {"$set": {"name": name}},
+        return_document=ReturnDocument.AFTER,
+    )
+    return doc
+
+
 async def add_chart_to_dashboard(
     db: AsyncIOMotorDatabase, dashboard_id: str, chart: Chart
 ):
@@ -153,7 +181,7 @@ async def get_chart(
     collection = db.Dashboards
     doc = await collection.find_one(
         {"_id": ObjectId(dashboard_id), "charts.id": chart_id},
-        {"_id": 0, "charts.$": 1}
+        {"_id": 0, "charts.$": 1},
     )
     return doc["charts"][0]
 
@@ -167,9 +195,7 @@ async def edit_dashboard_chart(
     chart = {f"charts.$.{k}": v for k, v in chart.items()}
     doc = await collection.find_one_and_update(
         {"_id": ObjectId(dashboard_id), "charts.id": chart_id},
-        {
-            "$set": chart
-        },
+        {"$set": chart},
         return_document=ReturnDocument.AFTER,
     )
     return doc

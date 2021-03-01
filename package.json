@@ -20,6 +20,7 @@
     "react-plotly.js": "^2.5.1",
     "react-resizeable": "^0.2.6",
     "react-router-dom": "^5.2.0",
+    "react-spinners": "^0.10.6",
     "recharts": "^2.0.8"
   },
   "devDependencies": {

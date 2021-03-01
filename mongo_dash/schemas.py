@@ -56,6 +56,7 @@ class CreateEditPipeline(BaseModel):
 
 
 class CreateEditDashboard(BaseModel):
+    dashboard_id: Optional[str]
     name: str
 
 

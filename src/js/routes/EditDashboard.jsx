@@ -9,12 +9,18 @@ import {
     Route,
 } from "react-router-dom";
 import Button from "../components/Button";
+import Input from "../components/Input";
 import AddChart from "./AddChart";
 import ViewChart from "./ViewChart";
+import Modal from "../components/Modal";
 
 export default function EditDashboard() {
     const { dashboardId } = useParams();
     let match = useRouteMatch();
+    const [showModal, setShowModal] = useState(false);
+    const [dashboardName, setDashboardName] = useState("");
+    const [errMsg, setErrMsg] = useState(null);
+    const [successMsg, setSuccessMsg] = useState(null);
     const [dashboard, setDashboard] = useState({ charts: [] });
 
     const getData = async () => {
@@ -22,10 +28,29 @@ export default function EditDashboard() {
             params: { dashboard_id: dashboardId },
         });
         setDashboard(result.data);
+        setDashboardName(result.data.name);
     };
     useEffect(() => {
         getData();
     }, [dashboardId]);
+
+    const editDashboardName = async () => {
+        try {
+            await axios.patch("/api/dashboards/edit", {
+                name: dashboardName,
+                dashboard_id: dashboardId
+            });
+            setShowModal(false);
+            setErrMsg(null);
+            setSuccessMsg("Dashboard name successfully updated!");
+            getData();
+        } catch (error) {
+            if (error.response.status == 422) {
+                setErrMsg("Error validating fields. Please try again!");
+                setSuccessMsg(null);
+            }
+        }
+    };
 
     return (
         <>
@@ -39,13 +64,44 @@ export default function EditDashboard() {
                 </p>
                 <div className="rounded-md bg-white px-2 flex items-center mb-4">
                     <Link to={`/dashboards/view/${dashboardId}`}>
-                        <Button>View dashboard</Button>
+                        <Button.Primary>View dashboard</Button.Primary>
                     </Link>
-                    <Button>Edit dashboard name</Button>
+                    <Button.Primary onClick={() => setShowModal(true)}>
+                        Edit dashboard name
+                    </Button.Primary>
                 </div>
+                {successMsg !== null ? (
+                    <div className="rounded-md p-4 bg-emerald-100 my-2 text-green-800">
+                        {successMsg}
+                    </div>
+                ) : null}
+                <Modal
+                    visible={showModal}
+                    onClose={() => setShowModal(false)}
+                    title="Edit dashboard"
+                >
+                    <p className="text-blueGray-800 mb-4">
+                        Edit your dashboard name.
+                    </p>
+                    <div className="w-4/12">
+                        <Input.Text
+                            name="Dashboard name"
+                            value={dashboardName}
+                            onChange={(e) => setDashboardName(e.target.value)}
+                        />
+                    </div>
+                    {errMsg !== null ? (
+                        <div className="rounded-md p-4 bg-rose-200 my-2 text-red-800">
+                            {errMsg}
+                        </div>
+                    ) : null}
+                    <Button.Primary onClick={editDashboardName}>
+                        Update dashboard name
+                    </Button.Primary>
+                </Modal>
             </div>
             <div className="grid grid-cols-4 divide-x divide-blueGray-200 bg-white h-full">
-                <div>
+                <div className="col-span-1">
                     <div className="p-4">
                         <h2 className="text-3xl text-blueGray-800 font-bold mb-4">
                             Charts
@@ -56,7 +112,7 @@ export default function EditDashboard() {
                         </p>
                         <div className="my-4">
                             <Link to={`${match.url}/charts/add`}>
-                                <Button>Add chart</Button>
+                                <Button.Primary>Add chart</Button.Primary>
                             </Link>
                         </div>
                     </div>
@@ -80,7 +136,7 @@ export default function EditDashboard() {
                         ))}
                     </div>
                 </div>
-                <div className="col-span-3">
+                <div className="col-span-3 overflow-y-scroll">
                     <Switch>
                         <Route path={`${match.url}/charts/add`}>
                             <AddChart

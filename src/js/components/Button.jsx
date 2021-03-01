@@ -1,12 +1,30 @@
 import React from "react";
 
-export default function Button({ children, onClick}) {
+function Primary({ children, onClick }) {
     return (
         <button
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md focus:outline-none transition-colors my-2 mr-2"
+            className="px-4 py-2 bg-green-500 hover:bg-green-400 text-black text-sm rounded-md font-semibold focus:outline-none transition-colors my-2 mr-2"
             onClick={onClick}
         >
-            {children}    
+            {children}
         </button>
     );
 }
+
+function GreyXS({ children, onClick }) {
+    return (
+        <button
+            className="px-2 py-1 bg-blueGray-200 rounded-md text-xs font-semibold text-blueGray-600 hover:bg-green-500 hover:text-black transition-colors focus:outline-none"
+            onClick={onClick}
+        >
+            {children}
+        </button>
+    );
+}
+
+const Button = {
+    Primary,
+    GreyXS
+};
+
+export default Button;

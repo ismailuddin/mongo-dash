@@ -31,7 +31,7 @@ function DashboardsHome() {
             });
             setShowModal(false);
             setErrMsg(null);
-            setSuccessMsg("Pipeline successfully registered!");
+            setSuccessMsg("Dashboard created!");
             getDashboards();
         } catch (error) {
             if (error.response.status == 422) {
@@ -78,9 +78,9 @@ function DashboardsHome() {
                     </NavLink>
                 ))}
             </div>
-            <Button onClick={() => setShowModal(true)}>
+            <Button.Primary onClick={() => setShowModal(true)}>
                 Add new dashboard
-            </Button>
+            </Button.Primary>
             <Modal
                 visible={showModal}
                 onClose={() => setShowModal(false)}
@@ -101,7 +101,7 @@ function DashboardsHome() {
                         {errMsg}
                     </div>
                 ) : null}
-                <Button onClick={createDashboard}>Create dashboard</Button>
+                <Button.Primary onClick={createDashboard}>Create dashboard</Button.Primary>
             </Modal>
         </div>
         </>

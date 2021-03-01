@@ -173,7 +173,7 @@ export default function AddChart({ dashboardId, reloadCharts }) {
             <div className="mb-2">
                 <TimeseriesLine data={plotData} />
             </div>
-            <Button onClick={createChart}>Save chart</Button>
+            <Button.Primary onClick={createChart}>Save chart</Button.Primary>
         </div>
     );
 }

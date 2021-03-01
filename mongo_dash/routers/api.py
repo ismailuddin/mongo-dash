@@ -52,6 +52,26 @@ async def register_pipeline(
     return inserted_id
 
 
+@router.post("/pipelines/run_arbitrary")
+async def register_pipeline(
+    response: Response,
+    pipeline: CreateEditPipeline,
+    db=Depends(database.get_database),
+):
+    try:
+        json.loads(pipeline.stages)
+    except json.JSONDecodeError:
+        response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+        return "Pipeline stages invalid!"
+    data = await database.run_arbitrary_pipeline(
+        db=db,
+        collection=pipeline.collection,
+        pipeline_stages=pipeline.stages,
+        limit=5
+    )
+    return data
+
+
 @router.post("/pipelines/edit", status_code=status.HTTP_201_CREATED)
 async def edit_pipeline(
     response: Response,
@@ -98,7 +118,7 @@ async def get_pipeline(
 @router.get("/pipelines/run")
 async def run_pipeline(
     pipeline_id: str,
-    limit: int = 2_000,
+    limit: int = 20_000,
     from_timestamp: datetime = None,
     db=Depends(database.get_database),
     admin_db=Depends(database.get_admin_database),
@@ -142,6 +162,19 @@ async def create_dashboard(
         ),
     )
     return inserted_id
+
+
+@router.patch("/dashboards/edit")
+async def edit_dashboard(
+    dashboard: CreateEditDashboard,
+    db=Depends(database.get_database)
+):
+    await database.edit_dashboard_name(
+        db=db,
+        dashboard_id=dashboard.dashboard_id,
+        name=dashboard.name
+    )
+    return
 
 
 @router.get("/dashboards/view")
