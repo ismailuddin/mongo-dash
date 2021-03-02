@@ -49,7 +49,7 @@ const DatabaseSelector = ({ databases, currentDatabase }) => {
                 onClick={() => setVisible(!visible)}
             >
                 <div className="flex items-center">
-                    <Icons.Database className="w-4 h-4 text-blueGray-500 mr-2" />
+                    <Icons.Database className="w-4 h-4 text-blueGray-500 mr-2 stroke-2" />
                     Select database
                 </div>
                 <Icons.ChevronDown className="ml-4 h-4 w-4" />
@@ -63,9 +63,9 @@ const DatabaseSelector = ({ databases, currentDatabase }) => {
                                 onClick={() => setDatabase(database)}
                             >
                                 {database == currentDatabase ? (
-                                    <Icons.TickCircle className="w-4 h-4 mr-2 text-green-500 group-hover:text-black" />
+                                    <Icons.TickCircle className="w-4 h-4 mr-2 text-green-500 group-hover:text-black stroke-2" />
                                 ) : (
-                                    <Icons.Database className="w-4 h-4 text-blueGray-500 mr-2" />
+                                    <Icons.Database className="w-4 h-4 text-blueGray-500 mr-2 stroke-2" />
                                 )}
                                 {truncate(database)}
                             </button>
@@ -83,7 +83,7 @@ export default function Header() {
     const getDatabases = async () => {
         try {
             const databasesData = await axios.get("/api/get_databases");
-            setDatbases(databasesData.data);
+            setDatbases(databasesData.data.filter(d => d != "MongoDBViz"));
             const currentDatabaseData = await axios.get("/api/get_current_database");
             setCurrentDatabase(currentDatabaseData.data);
         } catch (error) {

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import toast from 'react-hot-toast';
 import Input from "../components/Input";
+import PuffLoader from "react-spinners/PuffLoader";
 import { useLocation } from "react-router-dom";
 import Button from "../components/Button";
 import TimeseriesLine from "../components/TimeseriesLine";
@@ -8,18 +10,17 @@ import TimeseriesLine from "../components/TimeseriesLine";
 export default function AddChart({ dashboardId, reloadCharts }) {
     const location = useLocation();
     const [chartName, setChartName] = useState("");
+    const [loading, setLoading] = useState(false);
     const [pipelineId, setPipelineId] = useState(null);
     const [chartType, setChartType] = useState("TimeseriesLine");
     const [pipelines, setPipelines] = useState([]);
+    const [plotData, setPlotData] = useState([]);
     const [pipeline, setPipeline] = useState({
         pipeline_id: null,
         name: null,
         collection: null,
         stages: null,
     });
-    const [plotData, setPlotData] = useState([]);
-    const [errMsg, setErrMsg] = useState(null);
-    const [successMsg, setSuccessMsg] = useState(null);
 
     const getPipelines = async () => {
         try {
@@ -29,6 +30,7 @@ export default function AddChart({ dashboardId, reloadCharts }) {
             getPipeline(result.data[0]._id);
             getPlotData(result.data[0]._id);
         } catch (error) {
+            toast.error("Error getting pipelines!");
             console.error(error);
         }
     };
@@ -39,30 +41,35 @@ export default function AddChart({ dashboardId, reloadCharts }) {
             });
             setPipeline(result.data);
         } catch (error) {
-            setErrMsg("Error retrieving pipeline details");
-            setSuccessMsg(null);
+            toast.error("Error retrieving pipeline details");
         }
     };
     const getPlotData = async (pipelineId) => {
         try {
+            setLoading(true);
             const { data } = await axios.get("/api/pipelines/run", {
                 params: {
                     pipeline_id: pipelineId,
+                    limit: 5000
                 },
             });
-            const x = data.map((d) => d.x);
-            const y = data.map((d) => d.y);
-            setPlotData([
-                {
-                    x,
-                    y,
+            const groupedData = [];
+            const uniqueKeys = [...new Set(data.map(d => d.grouping))];
+            uniqueKeys.forEach(key => {
+                const filtered = data.filter(d => d.grouping == key);
+                groupedData.push({
+                    name: key,
+                    x: filtered.map(d => d.x),
+                    y: filtered.map(d => d.y),
                     type: "scatter",
                     mode: "lines",
-                },
-            ]);
-            setErrMsg(null);
+                })
+            });
+            setPlotData(groupedData);
+            setLoading(false);
         } catch (error) {
-            setErrMsg("Error running pipeline!");
+            toast.error("Error running pipeline!");
+            setLoading(false);
         }
     };
 
@@ -85,12 +92,11 @@ export default function AddChart({ dashboardId, reloadCharts }) {
                 },
                 { params: { dashboard_id: dashboardId }}
             );
-            setSuccessMsg("Chart successfully registered!");
-            setErrMsg(null);
+            toast.success("Chart successfully registered!");
             reloadCharts();
         } catch (error) {
             console.error(error);
-            setErrMsg("Error registering chart!");
+            toast.error("Error registering chart!");
         }
     };
 
@@ -160,18 +166,20 @@ export default function AddChart({ dashboardId, reloadCharts }) {
                     </div>
                 </div>
             </div>
-            {errMsg !== null ? (
-                <div className="rounded-md p-4 bg-rose-200 my-2 text-red-800">
-                    {errMsg}
+            {loading && (
+                <div className="flex w-full justify-center h-full py-14 items-center">
+                    <PuffLoader color={"#22C55E"} loading={loading} size={80} />
                 </div>
-            ) : null}
-            {successMsg !== null ? (
-                <div className="rounded-md p-4 bg-emerald-100 my-2 text-green-800">
-                    {successMsg}
-                </div>
-            ) : null}
+            )}
             <div className="mb-2">
-                <TimeseriesLine data={plotData} />
+                {!loading && plotData.length > 0 && <TimeseriesLine data={plotData} />}
+                {!loading && plotData.length == 0 && (
+                    <div className="py-24 flex items-center justify-center">
+                        <h4 className="text-lg text-blueGray-400 font-semibold">
+                            No data found!
+                        </h4>
+                    </div>
+                )}
             </div>
             <Button.Primary onClick={createChart}>Save chart</Button.Primary>
         </div>

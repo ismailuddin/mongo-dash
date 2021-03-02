@@ -65,6 +65,7 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
             const { data } = await axios.get("/api/pipelines/run", {
                 params: {
                     pipeline_id: pipelineId,
+                    limit: 5000
                 },
             });
             const groupedData = [];
@@ -192,7 +193,7 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
                 {!loading && plotData.length == 0 && (
                     <div className="py-24 flex items-center justify-center">
                         <h4 className="text-lg text-blueGray-400 font-semibold">
-                            No data found within this time period!
+                            No data found!
                         </h4>
                     </div>
                 )}
