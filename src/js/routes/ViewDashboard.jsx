@@ -3,12 +3,14 @@ import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import Button from "../components/Button";
 import Chart from "./Chart";
+import Icons from "../components/Icons";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 
 export default function ViewDashboard() {
     const { dashboardId } = useParams();
     const [dashboard, setDashboard] = useState(null);
+    const [lastUpdated, setLastUpdated] = useState(new Date());
 
     useEffect(() => {
         const getData = async () => {
@@ -33,12 +35,19 @@ export default function ViewDashboard() {
                     <Link to={`/dashboards/edit/${dashboardId}`}>
                         <Button.Primary>Edit dashboard</Button.Primary>
                     </Link>
+                    <Button.Primary onClick={() => setLastUpdated(new Date())}>
+                        <Icons.Refresh className="w-5 h-5 transform transition-transform duration-300 group-hover:rotate-45" />
+                    </Button.Primary>
                 </div>
             </div>
             <div className="p-4 grid grid-cols-12 gap-4">
                 {dashboard.charts.map((chart, i) => (
                     <div className="p-3 bg-white col-span-6 rounded-md">
-                        <Chart key={chart.id} chart={chart} />
+                        <Chart
+                            key={chart.id}
+                            chart={chart}
+                            lastUpdated={lastUpdated}
+                        />
                     </div>
                 ))}
             </div>

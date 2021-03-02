@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import PuffLoader from "react-spinners/PuffLoader";
 import axios from "axios";
-import Input from "../components/Input";
+import toast from 'react-hot-toast';
 import { useLocation, useParams } from "react-router-dom";
+import Input from "../components/Input";
 import Button from "../components/Button";
 import TimeseriesLine from "../components/TimeseriesLine";
 
@@ -9,6 +11,7 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
     const location = useLocation();
     const { chartId } = useParams();
     const [chart, setChart] = useState({});
+    const [loading, setLoading] = useState(false);
     const [chartName, setChartName] = useState("");
     const [pipelineId, setPipelineId] = useState(null);
     const [chartType, setChartType] = useState("TimeseriesLine");
@@ -20,8 +23,6 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
         stages: null,
     });
     const [plotData, setPlotData] = useState([]);
-    const [errMsg, setErrMsg] = useState(null);
-    const [successMsg, setSuccessMsg] = useState(null);
 
     const getChart = async () => {
         try {
@@ -55,12 +56,12 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
             });
             setPipeline(result.data);
         } catch (error) {
-            setErrMsg("Error retrieving pipeline details");
-            setSuccessMsg(null);
+            toast.error("Error retrieving pipeline details");
         }
     };
     const getPlotData = async (pipelineId) => {
         try {
+            setLoading(true);
             const { data } = await axios.get("/api/pipelines/run", {
                 params: {
                     pipeline_id: pipelineId,
@@ -81,9 +82,10 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
                 });
             })
             setPlotData(groupedData);
-            setErrMsg(null);
+            setLoading(false);
         } catch (error) {
-            setErrMsg("Error running pipeline!");
+            toast.error("Error running pipeline!");
+            setLoading(false);
         }
     };
     const editChart = async () => {
@@ -106,19 +108,16 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
                 },
                 { params: { dashboard_id: dashboardId }}
             );
-            setSuccessMsg("Chart successfully registered!");
-            setErrMsg(null);
+            toast.success("Chart successfully registered!");
             reloadCharts();
         } catch (error) {
             console.error(error);
-            setErrMsg("Error registering chart!");
+            toast.error("Error registering chart!");
         }
     };
 
     useEffect(() => {
         getChart();
-        setErrMsg(null);
-        setSuccessMsg(null);
     }, [location.key]);
 
     return (
@@ -183,20 +182,22 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
                     </div>
                 </div>
             </div>
-            {errMsg !== null ? (
-                <div className="rounded-md p-4 bg-rose-200 my-2 text-red-800">
-                    {errMsg}
+            {loading && (
+                <div className="flex w-full justify-center h-full py-14 items-center">
+                    <PuffLoader color={"#22C55E"} loading={loading} size={80} />
                 </div>
-            ) : null}
-            {successMsg !== null ? (
-                <div className="rounded-md p-4 bg-emerald-100 my-2 text-green-800">
-                    {successMsg}
-                </div>
-            ) : null}
+            )}
             <div className="mb-2">
-                <TimeseriesLine data={plotData} />
+                {!loading && plotData.length > 0 && <TimeseriesLine data={plotData} />}
+                {!loading && plotData.length == 0 && (
+                    <div className="py-24 flex items-center justify-center">
+                        <h4 className="text-lg text-blueGray-400 font-semibold">
+                            No data found within this time period!
+                        </h4>
+                    </div>
+                )}
             </div>
-            <Button.Primary onClick={editChart}>Edit chart</Button.Primary>
+            <Button.Primary onClick={editChart}>Update chart</Button.Primary>
         </div>
     );
 }

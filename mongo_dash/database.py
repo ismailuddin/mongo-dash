@@ -9,6 +9,10 @@ from .config import Config
 from .schemas import Pipeline, Dashboard, Chart
 
 
+async def get_client() -> AsyncIOMotorClient:
+    client = AsyncIOMotorClient(Config.MONGO_URI)
+    return client
+
 async def get_admin_database() -> AsyncIOMotorDatabase:
     client = AsyncIOMotorClient(Config.MONGO_URI)
     database = client.get_database("MongoDBViz")
@@ -27,7 +31,6 @@ async def initialise_dashboard_store():
     try:
         await db.create_collection("Dashboards")
         await db.create_collection("Pipelines")
-        # await db.create_collection("Plots")
     except Exception:
         pass
 
@@ -75,6 +78,11 @@ async def run_arbitrary_pipeline(
 async def get_collection_names(db: AsyncIOMotorDatabase) -> list:
     collections = await db.list_collection_names()
     return collections
+
+
+async def get_database_names(client: AsyncIOMotorClient) -> list:
+    databases = await client.list_database_names()
+    return databases
 
 
 async def get_pipelines(

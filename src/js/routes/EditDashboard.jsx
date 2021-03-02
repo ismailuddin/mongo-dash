@@ -8,6 +8,7 @@ import {
     Switch,
     Route,
 } from "react-router-dom";
+import toast from 'react-hot-toast';
 import Button from "../components/Button";
 import Input from "../components/Input";
 import AddChart from "./AddChart";
@@ -19,8 +20,6 @@ export default function EditDashboard() {
     let match = useRouteMatch();
     const [showModal, setShowModal] = useState(false);
     const [dashboardName, setDashboardName] = useState("");
-    const [errMsg, setErrMsg] = useState(null);
-    const [successMsg, setSuccessMsg] = useState(null);
     const [dashboard, setDashboard] = useState({ charts: [] });
 
     const getData = async () => {
@@ -33,7 +32,6 @@ export default function EditDashboard() {
     useEffect(() => {
         getData();
     }, [dashboardId]);
-
     const editDashboardName = async () => {
         try {
             await axios.patch("/api/dashboards/edit", {
@@ -41,19 +39,17 @@ export default function EditDashboard() {
                 dashboard_id: dashboardId
             });
             setShowModal(false);
-            setErrMsg(null);
-            setSuccessMsg("Dashboard name successfully updated!");
             getData();
+            toast.success("Dashboard name successfully updated!")
         } catch (error) {
             if (error.response.status == 422) {
-                setErrMsg("Error validating fields. Please try again!");
-                setSuccessMsg(null);
+                toast.error("Dashboard name successfully updated!")
             }
         }
     };
 
     return (
-        <>
+        <>  
             <div className="bg-white p-4 border-b border-blueGray-200">
                 <h2 className="text-3xl text-blueGray-800 font-bold mb-4">
                     <span className="font-light">Edit dashboard | </span>
@@ -70,11 +66,6 @@ export default function EditDashboard() {
                         Edit dashboard name
                     </Button.Primary>
                 </div>
-                {successMsg !== null ? (
-                    <div className="rounded-md p-4 bg-emerald-100 my-2 text-green-800">
-                        {successMsg}
-                    </div>
-                ) : null}
                 <Modal
                     visible={showModal}
                     onClose={() => setShowModal(false)}
@@ -90,11 +81,6 @@ export default function EditDashboard() {
                             onChange={(e) => setDashboardName(e.target.value)}
                         />
                     </div>
-                    {errMsg !== null ? (
-                        <div className="rounded-md p-4 bg-rose-200 my-2 text-red-800">
-                            {errMsg}
-                        </div>
-                    ) : null}
                     <Button.Primary onClick={editDashboardName}>
                         Update dashboard name
                     </Button.Primary>

@@ -3,8 +3,9 @@ import axios from "axios";
 import TimeseriesLine from "../components/TimeseriesLine";
 import Button from "../components/Button";
 import PuffLoader from "react-spinners/PuffLoader";
+import Icons from "../components/Icons";
 
-export default function Chart({ chart }) {
+export default function Chart({ chart, lastUpdated }) {
     const now = new Date();
     const [plotData, setPlotData] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -45,12 +46,15 @@ export default function Chart({ chart }) {
         getPlotData();
         setErrMsg(null);
         setSuccessMsg(null);
-    }, [location.key, timeFilter]);
+    }, [location.key, timeFilter, lastUpdated]);
     return (
         <div className="group h-full">
             <div className="flex justify-between items-center">
                 <h4 className="font-semibold text-md mb-0">{chart.name}</h4>
                 <div className="group-hover:opacity-100 opacity-0 flex gap-x-1 transition-opacity duration-300">
+                    <Button.GreyXS onClick={() => getPlotData()}>
+                        <Icons.Refresh className="h-4 w-4" />
+                    </Button.GreyXS>
                     <Button.GreyXS onClick={() => setTimeFilter(null)}>
                         -/-
                     </Button.GreyXS>
@@ -77,7 +81,7 @@ export default function Chart({ chart }) {
                 </div>
             )}
             {!loading && plotData.length > 0 && <TimeseriesLine data={plotData} />}
-            {plotData.length == 0 && (
+            {!loading && plotData.length == 0 && (
                 <div className="py-24 flex items-center justify-center">
                     <h4 className="text-lg text-blueGray-400 font-semibold">
                         No data found within this time period!

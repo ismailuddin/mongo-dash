@@ -5,7 +5,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, Body, status, Response
 from fastapi.responses import JSONResponse
 from .. import database
-from ..config import Config
+from ..config import Config, update_config
 from ..schemas import (
     Pipeline,
     Dashboard,
@@ -25,6 +25,27 @@ async def get_collection_names(
 ):
     collections = await database.get_collection_names(db)
     return collections
+
+
+@router.get("/get_databases")
+async def get_database_names(
+    client=Depends(database.get_client),
+):
+    databases = await database.get_database_names(client)
+    return databases
+
+
+@router.get("/set_database")
+async def set_database(database: str):
+    update_config(
+        mongo_uri=Config.MONGO_URI,
+        database_name=database
+    )
+
+
+@router.get("/get_current_database")
+async def get_current_database():
+    return Config.DATABASE_NAME
 
 
 @router.post("/pipelines/register", status_code=status.HTTP_201_CREATED)
@@ -167,7 +188,7 @@ async def create_dashboard(
 @router.patch("/dashboards/edit")
 async def edit_dashboard(
     dashboard: CreateEditDashboard,
-    db=Depends(database.get_database)
+    db=Depends(database.get_admin_database)
 ):
     await database.edit_dashboard_name(
         db=db,

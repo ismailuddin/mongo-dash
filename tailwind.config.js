@@ -25,6 +25,7 @@ module.exports = {
 			visibility: ['responsive', 'focus', 'hover', 'group-hover'],
 			backgroundColor: ['responsive', 'focus', 'hover', 'group-hover', 'dark'],
 			borderColor: ['dark', 'focus', 'hover'],
+			rotate: ['group-hover']
 		}
 	},
 	plugins: []

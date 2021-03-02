@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
+import toast from 'react-hot-toast';
 import Input from "../components/Input";
 import Button from "../components/Button";
-import { useParams } from "react-router-dom";
 import PipelineStagesEditor from "../components/PipelineStagesEditor";
 import PipelinePreview from "../components/PipelinePreview";
 
@@ -17,8 +18,6 @@ export default function ViewPipeline({ reloadPipelines }) {
         collection: null,
         stages: null
     });
-    const [errMsg, setErrMsg] = useState(null);
-    const [successMsg, setSuccessMsg] = useState(null);
 
     useEffect(() => {
         const getData = async () => {
@@ -30,8 +29,6 @@ export default function ViewPipeline({ reloadPipelines }) {
             setCollections(collectionsResult.data);
         };
         getData();
-        setSuccessMsg(null);
-        setErrMsg(null);
     }, [pipelineId]);
 
     const editPipeline = async () => {
@@ -42,13 +39,11 @@ export default function ViewPipeline({ reloadPipelines }) {
                 collection: pipeline.collection,
                 stages: pipeline.stages
             });
-            setErrMsg(null);
-            setSuccessMsg("Pipeline successfully updated!");
+            toast.success("Pipeline successfully updated!");
             reloadPipelines();
         } catch (error) {
             if (error.response.status == 422) {
-                setErrMsg("Error validating fields. Please try again!");
-                setSuccessMsg(null);
+                toast.error("Error validating fields. Please try again!");
             }
         }
     }
@@ -60,10 +55,9 @@ export default function ViewPipeline({ reloadPipelines }) {
                 stages: pipeline.stages
             });
             setPipelineResult(JSON.stringify(data, null, 1));
-            setErrMsg(null);
         } catch (error) {
             console.error(error);
-            setErrMsg("Error running pipeline!");
+            toast.error("Error running pipeline!");
         }
     }
 
@@ -103,16 +97,6 @@ export default function ViewPipeline({ reloadPipelines }) {
                     setPipeline({ ...pipeline, stages: v })
                 }
             />
-            {errMsg !== null ? (
-                <div className="rounded-md p-4 bg-rose-200 my-2 text-red-800">
-                    {errMsg}
-                </div>
-            ) : null}
-            {successMsg !== null ? (
-                <div className="rounded-md p-4 bg-emerald-100 my-2 text-green-800">
-                    {successMsg}
-                </div>
-            ) : null}
             <div className="flex mb-4">
                 <Button.Primary onClick={editPipeline}>Update pipeline</Button.Primary>
                 <Button.Primary onClick={previewPipeline}>Preview pipeline</Button.Primary>

@@ -10,6 +10,7 @@
   "dependencies": {
     "ace-builds": "^1.4.12",
     "axios": "^0.21.1",
+    "classnames": "^2.2.6",
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0",
     "plotly.js": "^1.58.4",
@@ -17,6 +18,7 @@
     "react-ace": "^9.3.0",
     "react-dom": "^17.0.1",
     "react-grid-layout": "^1.2.0",
+    "react-hot-toast": "^1.0.2",
     "react-plotly.js": "^2.5.1",
     "react-resizeable": "^0.2.6",
     "react-router-dom": "^5.2.0",
