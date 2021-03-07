@@ -5,7 +5,7 @@ import Button from "../components/Button";
 import PuffLoader from "react-spinners/PuffLoader";
 import Icons from "../components/Icons";
 
-export default function Chart({ chart, lastUpdated }) {
+export default function Chart({ chart, lastUpdated, incomingTimeFilter=null }) {
     const now = new Date();
     const [plotData, setPlotData] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -47,6 +47,11 @@ export default function Chart({ chart, lastUpdated }) {
         setErrMsg(null);
         setSuccessMsg(null);
     }, [location.key, timeFilter, lastUpdated]);
+    useEffect(() => {
+        if (incomingTimeFilter !== null) {
+            setTimeFilter(incomingTimeFilter);
+        }
+    }, [incomingTimeFilter]);
     return (
         <div className="group h-full">
             <div className="flex justify-between items-center">
