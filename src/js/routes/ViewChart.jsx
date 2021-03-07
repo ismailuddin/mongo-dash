@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import PuffLoader from "react-spinners/PuffLoader";
 import axios from "axios";
-import toast from 'react-hot-toast';
-import { useLocation, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
+import { useLocation, useParams, useHistory } from "react-router-dom";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import Icons from "../components/Icons";
 import TimeseriesLine from "../components/TimeseriesLine";
 
+
 export default function ViewChart({ dashboardId, reloadCharts }) {
+    const history = useHistory();
     const location = useLocation();
     const { chartId } = useParams();
     const [chart, setChart] = useState({});
@@ -28,7 +31,7 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
         try {
             getPipelines();
             const result = await axios.get("/api/dashboards/charts/view", {
-                params: { chart_id: chartId, dashboard_id: dashboardId }
+                params: { chart_id: chartId, dashboard_id: dashboardId },
             });
             setChart(result.data);
             setChartName(result.data.name);
@@ -39,7 +42,7 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     const getPipelines = async () => {
         try {
@@ -65,13 +68,13 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
             const { data } = await axios.get("/api/pipelines/run", {
                 params: {
                     pipeline_id: pipelineId,
-                    limit: 5000
+                    limit: 5000,
                 },
             });
             const groupedData = [];
-            const uniqueKeys = [...new Set(data.map(d => d.grouping))];
-            uniqueKeys.map(key => {
-                const filtered = data.filter(d => d.grouping == key);
+            const uniqueKeys = [...new Set(data.map((d) => d.grouping))];
+            uniqueKeys.map((key) => {
+                const filtered = data.filter((d) => d.grouping == key);
                 const x = filtered.map((d) => d.x);
                 const y = filtered.map((d) => d.y);
                 groupedData.push({
@@ -79,9 +82,9 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
                     y,
                     type: "scatter",
                     mode: "lines",
-                    name: key
+                    name: key,
                 });
-            })
+            });
             setPlotData(groupedData);
             setLoading(false);
         } catch (error) {
@@ -91,7 +94,8 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
     };
     const editChart = async () => {
         try {
-            await axios.post("/api/dashboards/edit_chart",
+            await axios.post(
+                "/api/dashboards/charts/edit",
                 {
                     id: chartId,
                     name: chartName,
@@ -107,13 +111,26 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
                     },
                     grouping: "",
                 },
-                { params: { dashboard_id: dashboardId }}
+                { params: { dashboard_id: dashboardId } }
             );
             toast.success("Chart successfully registered!");
             reloadCharts();
         } catch (error) {
             console.error(error);
             toast.error("Error registering chart!");
+        }
+    };
+    const deleteChart = async () => {
+        try {
+            await axios.delete("/api/dashboards/charts/delete", {
+                params: { dashboard_id: dashboardId, chart_id: chartId },
+            });
+            toast.success("Chart successfully deleted!");
+            reloadCharts();
+            history.push(`/dashboards/edit/${dashboardId}`);
+        } catch (error) {
+            console.error(error);
+            toast.error("Error deleting chart!");
         }
     };
 
@@ -134,7 +151,7 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
                     <Input.Text
                         name="Name"
                         value={chartName}
-                        onChange={e => setChartName(e.target.value)}
+                        onChange={(e) => setChartName(e.target.value)}
                     />
                 </div>
                 <div className="col-span-4">
@@ -189,7 +206,9 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
                 </div>
             )}
             <div className="mb-2">
-                {!loading && plotData.length > 0 && <TimeseriesLine data={plotData} />}
+                {!loading && plotData.length > 0 && (
+                    <TimeseriesLine data={plotData} />
+                )}
                 {!loading && plotData.length == 0 && (
                     <div className="py-24 flex items-center justify-center">
                         <h4 className="text-lg text-blueGray-400 font-semibold">
@@ -198,7 +217,16 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
                     </div>
                 )}
             </div>
-            <Button.Primary onClick={editChart}>Update chart</Button.Primary>
+            <div className="flex items-center">
+                <Button.Primary onClick={editChart}>Update chart</Button.Primary>
+                <Button.Danger onClick={deleteChart}>
+                    <div className="flex items-center">
+                        <Icons.Cross className="w-4 h-4 mr-2" />
+                        Delete chart
+                    </div>
+                </Button.Danger>
+
+            </div>
         </div>
     );
 }

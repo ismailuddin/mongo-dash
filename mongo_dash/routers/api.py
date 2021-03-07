@@ -208,6 +208,17 @@ async def edit_dashboard(
     return
 
 
+@router.delete("/dashboards/delete")
+async def delete_dashboard(
+    dashboard_id: str,
+    db=Depends(database.get_admin_database)
+):
+    await database.delete_dashboard(
+        db=db,
+        dashboard_id=dashboard_id
+    )
+
+
 @router.get("/dashboards/view")
 async def get_dashboard(
     dashboard_id: str, db=Depends(database.get_admin_database)
@@ -218,13 +229,13 @@ async def get_dashboard(
     return dashboard
 
 
-@router.post("/dashboards/add_chart")
+@router.post("/dashboards/charts/add")
 async def add_chart_to_dashboard(
     dashboard_id: str,
     chart: CreateEditChart,
     db=Depends(database.get_admin_database)
 ):
-    await database.add_chart_to_dashboard(
+    chart_id = await database.add_chart_to_dashboard(
         db=db,
         dashboard_id=dashboard_id,
         chart=Chart(
@@ -239,9 +250,10 @@ async def add_chart_to_dashboard(
             date_modified=datetime.utcnow(),
         )
     )
+    return chart_id
 
 
-@router.post("/dashboards/edit_chart")
+@router.post("/dashboards/charts/edit")
 async def edit_chart(
     dashboard_id: str,
     chart: CreateEditChart,
@@ -283,7 +295,7 @@ async def delete_chart(
     chart_id: str,
     db=Depends(database.get_admin_database)
 ):
-    await database.delete_pipeline(
+    await database.delete_chart(
         db=db,
         dashboard_id=dashboard_id,
         chart_id=chart_id,

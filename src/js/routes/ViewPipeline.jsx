@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import toast from "react-hot-toast";
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -8,6 +8,7 @@ import PipelineStagesEditor from "../components/PipelineStagesEditor";
 import PipelinePreview from "../components/PipelinePreview";
 
 export default function ViewPipeline({ reloadPipelines }) {
+    const history = useHistory();
     const { pipelineId } = useParams();
     const [collections, setCollections] = useState([]);
     const [pipelineResult, setPipelineResult] = useState("");
@@ -52,7 +53,7 @@ export default function ViewPipeline({ reloadPipelines }) {
                 params: { pipeline_id: pipelineId },
             });
             toast.success("Pipeline successfully deleted!");
-            window.location = "/app/pipelines";
+            history.push("/pipelines");
         } catch (error) {
             toast.error("Error deleting pipeline. Please try again!");
         }

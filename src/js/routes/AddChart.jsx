@@ -3,11 +3,12 @@ import axios from "axios";
 import toast from 'react-hot-toast';
 import Input from "../components/Input";
 import PuffLoader from "react-spinners/PuffLoader";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import Button from "../components/Button";
 import TimeseriesLine from "../components/TimeseriesLine";
 
 export default function AddChart({ dashboardId, reloadCharts }) {
+    const history = useHistory();
     const location = useLocation();
     const [chartName, setChartName] = useState("");
     const [loading, setLoading] = useState(false);
@@ -75,7 +76,7 @@ export default function AddChart({ dashboardId, reloadCharts }) {
 
     const createChart = async () => {
         try {
-            await axios.post("/api/dashboards/add_chart",
+            const { data: chartId } = await axios.post("/api/dashboards/charts/add",
                 {
                     name: chartName,
                     pipeline_id: pipelineId,
@@ -94,6 +95,7 @@ export default function AddChart({ dashboardId, reloadCharts }) {
             );
             toast.success("Chart successfully registered!");
             reloadCharts();
+            history.push(`/dashboards/edit/${dashboardId}/charts/view/${chartId}`);
         } catch (error) {
             console.error(error);
             toast.error("Error registering chart!");

@@ -7,10 +7,12 @@ import {
     Link,
     Switch,
     Route,
+    useHistory
 } from "react-router-dom";
 import toast from 'react-hot-toast';
 import Button from "../components/Button";
 import Input from "../components/Input";
+import Icons from "../components/Icons";
 import AddChart from "./AddChart";
 import ViewChart from "./ViewChart";
 import Modal from "../components/Modal";
@@ -18,6 +20,7 @@ import Modal from "../components/Modal";
 export default function EditDashboard() {
     const { dashboardId } = useParams();
     let match = useRouteMatch();
+    const history = useHistory();
     const [showModal, setShowModal] = useState(false);
     const [dashboardName, setDashboardName] = useState("");
     const [dashboard, setDashboard] = useState({ charts: [] });
@@ -47,6 +50,18 @@ export default function EditDashboard() {
             }
         }
     };
+    const deleteDashboard = async () => {
+        try {
+            await axios.delete("/api/dashboards/delete", {
+                params: { dashboard_id: dashboardId }
+            });
+            toast.success("Dashboard successfully deleted!");
+            history.push("/dashboards");
+        } catch (error) {
+            console.error(error);
+            toast.error("Error deleting dashboard!");
+        }
+    };
 
     return (
         <>  
@@ -58,13 +73,19 @@ export default function EditDashboard() {
                 <p className="text-blueGray-800 mb-4">
                     Below is your dashboard.
                 </p>
-                <div className="rounded-md bg-white px-2 flex items-center mb-4">
+                <div className="rounded-md bg-white flex items-center mb-4">
                     <Link to={`/dashboards/view/${dashboardId}`}>
                         <Button.Primary>View dashboard</Button.Primary>
                     </Link>
                     <Button.Primary onClick={() => setShowModal(true)}>
                         Edit dashboard name
                     </Button.Primary>
+                    <Button.Danger onClick={deleteDashboard}>
+                        <div className="flex items-center">
+                            <Icons.Cross className="w-4 h-4 mr-2" />
+                            Delete dashboard
+                        </div>
+                    </Button.Danger>
                 </div>
                 <Modal
                     visible={showModal}

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
+import toast from "react-hot-toast";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import PipelineStagesEditor from "../components/PipelineStagesEditor";
 
-
-
 export default function AddPipeline({ reloadPipelines }) {
+    const history = useHistory();
     const [collections, setCollections] = useState([]);
     const [collection, setCollection] = useState(null);
     const [pipelineName, setPipelineName] = useState("");
@@ -25,21 +26,24 @@ export default function AddPipeline({ reloadPipelines }) {
 
     const registerPipeline = async () => {
         try {
-            await axios.post("/api/pipelines/register", {
-                name: pipelineName,
-                collection: collection,
-                stages: pipelineStages
-            });
+            const { data: pipelineId } = await axios.post(
+                "/api/pipelines/register",
+                {
+                    name: pipelineName,
+                    collection: collection,
+                    stages: pipelineStages,
+                }
+            );
             setErrMsg(null);
-            setSuccessMsg("Pipeline successfully registered!");
+            toast.success("Pipeline successfully registered!");
             reloadPipelines();
+            history.push(`/pipelines/view/${pipelineId}`);
         } catch (error) {
             if (error.response.status == 422) {
-                setErrMsg("Error validating fields. Please try again!");
-                setSuccessMsg(null);
+                toast.error("Error validating fields. Please try again!");
             }
         }
-    }
+    };
 
     return (
         <div className="p-4">
@@ -53,36 +57,24 @@ export default function AddPipeline({ reloadPipelines }) {
                 <Input.Text
                     name="Pipeline name"
                     value={pipelineName}
-                    onChange={e => setPipelineName(e.target.value)}
+                    onChange={(e) => setPipelineName(e.target.value)}
                 />
             </div>
             <div className="w-4/12">
                 <Input.Select
                     name="Collections"
                     value={collection}
-                    values={collections.map(c => [c,c])}
-                    onChange={e => setCollection(e.target.value)}
+                    values={collections.map((c) => [c, c])}
+                    onChange={(e) => setCollection(e.target.value)}
                 />
             </div>
-            <label
-                class="block text-sm font-medium text-blueGray-600 mb-1"
-            >
+            <label class="block text-sm font-medium text-blueGray-600 mb-1">
                 Pipeline stages
             </label>
             <PipelineStagesEditor
                 value={pipelineStages}
-                onChange={v => setPipelineStages(v)}
+                onChange={(v) => setPipelineStages(v)}
             />
-            {errMsg !== null ? (
-                <div className="rounded-md p-4 bg-rose-200 my-2 text-red-800">
-                    {errMsg}
-                </div>
-            ) : null}
-            {successMsg !== null ? (
-                <div className="rounded-md p-4 bg-emerald-100 my-2 text-green-800">
-                    {successMsg}
-                </div>
-            ) : null}
             <Button.Primary onClick={registerPipeline}>
                 Register pipeline
             </Button.Primary>

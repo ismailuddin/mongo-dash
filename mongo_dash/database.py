@@ -176,16 +176,21 @@ async def edit_dashboard_name(
     return doc
 
 
+async def delete_dashboard(db: AsyncIOMotorClient, dashboard_id: str):
+    collection = db.Dashboards
+    await collection.delete_one({"_id": ObjectId(dashboard_id)})
+
+
 async def add_chart_to_dashboard(
     db: AsyncIOMotorDatabase, dashboard_id: str, chart: Chart
-):
+) -> str:
     collection = db.Dashboards
     doc = await collection.find_one_and_update(
         {"_id": ObjectId(dashboard_id)},
         {"$push": {"charts": chart.dict()}},
         return_document=ReturnDocument.AFTER,
     )
-    return doc
+    return chart.id
 
 
 async def get_chart(
