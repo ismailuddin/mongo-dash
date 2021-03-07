@@ -11,6 +11,17 @@ function Primary({ children, onClick }) {
     );
 }
 
+function Danger({ children, onClick }) {
+    return (
+        <button
+            className="px-4 py-2 bg-red-500 hover:bg-red-400 text-black text-sm rounded-md font-semibold focus:outline-none transition-colors my-2 mr-2 group"
+            onClick={onClick}
+        >
+            {children}
+        </button>
+    );
+}
+
 function GreyXS({ children, onClick }) {
     return (
         <button
@@ -24,6 +35,7 @@ function GreyXS({ children, onClick }) {
 
 const Button = {
     Primary,
+    Danger,
     GreyXS
 };
 

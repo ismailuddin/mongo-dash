@@ -136,6 +136,16 @@ async def get_pipeline(
     return pipeline
 
 
+@router.delete("/pipelines/delete")
+async def delete_pipeline(
+    pipeline_id: str, db=Depends(database.get_admin_database)
+):
+    await database.delete_pipeline(
+        db=db,
+        pipeline_id=pipeline_id
+    )
+
+
 @router.get("/pipelines/run")
 async def run_pipeline(
     pipeline_id: str,
@@ -232,12 +242,12 @@ async def add_chart_to_dashboard(
 
 
 @router.post("/dashboards/edit_chart")
-async def edit_dashboard_chart(
+async def edit_chart(
     dashboard_id: str,
     chart: CreateEditChart,
     db=Depends(database.get_admin_database)
 ):
-    await database.edit_dashboard_chart(
+    await database.edit_chart(
         db=db,
         dashboard_id=dashboard_id,
         chart=Chart(
@@ -254,7 +264,7 @@ async def edit_dashboard_chart(
 
 
 @router.get("/dashboards/charts/view")
-async def get_dashboard_chart(
+async def get_chart(
     dashboard_id: str,
     chart_id: str,
     db=Depends(database.get_admin_database)
@@ -265,3 +275,16 @@ async def get_dashboard_chart(
         chart_id=chart_id,
     )
     return chart
+
+
+@router.delete("/dashboards/charts/delete")
+async def delete_chart(
+    dashboard_id: str,
+    chart_id: str,
+    db=Depends(database.get_admin_database)
+):
+    await database.delete_pipeline(
+        db=db,
+        dashboard_id=dashboard_id,
+        chart_id=chart_id,
+    )

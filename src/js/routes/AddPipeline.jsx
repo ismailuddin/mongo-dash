@@ -6,7 +6,7 @@ import PipelineStagesEditor from "../components/PipelineStagesEditor";
 
 
 
-export default function AddPipeline() {
+export default function AddPipeline({ reloadPipelines }) {
     const [collections, setCollections] = useState([]);
     const [collection, setCollection] = useState(null);
     const [pipelineName, setPipelineName] = useState("");
@@ -32,6 +32,7 @@ export default function AddPipeline() {
             });
             setErrMsg(null);
             setSuccessMsg("Pipeline successfully registered!");
+            reloadPipelines();
         } catch (error) {
             if (error.response.status == 422) {
                 setErrMsg("Error validating fields. Please try again!");

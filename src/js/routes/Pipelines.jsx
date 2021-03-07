@@ -78,7 +78,7 @@ export default function Pipelines() {
             <div className="col-span-3 overflow-y-scroll">
                 <Switch>
                     <Route path={`${match.path}/add`}>
-                        <AddPipeline />
+                        <AddPipeline reloadPipelines={getPipelines} />
                     </Route>
                     <Route path={`${match.path}/view/:pipelineId`}>
                         <ViewPipeline reloadPipelines={getPipelines} />

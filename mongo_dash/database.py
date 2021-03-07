@@ -35,6 +35,16 @@ async def initialise_dashboard_store():
         pass
 
 
+async def get_collection_names(db: AsyncIOMotorDatabase) -> list:
+    collections = await db.list_collection_names()
+    return collections
+
+
+async def get_database_names(client: AsyncIOMotorClient) -> list:
+    databases = await client.list_database_names()
+    return databases
+
+
 async def run_pipeline(
     db: AsyncIOMotorDatabase,
     collection: str,
@@ -75,16 +85,6 @@ async def run_arbitrary_pipeline(
     return documents
 
 
-async def get_collection_names(db: AsyncIOMotorDatabase) -> list:
-    collections = await db.list_collection_names()
-    return collections
-
-
-async def get_database_names(client: AsyncIOMotorClient) -> list:
-    databases = await client.list_database_names()
-    return databases
-
-
 async def get_pipelines(
     db: AsyncIOMotorDatabase, database_name: str
 ) -> List[dict]:
@@ -122,6 +122,11 @@ async def register_pipeline(db: AsyncIOMotorDatabase, pipeline: Pipeline):
     collection = db.Pipelines
     result = await collection.insert_one(pipeline.dict(exclude={"id"}))
     return str(result.inserted_id)
+
+
+async def delete_pipeline(db: AsyncIOMotorClient, pipeline_id: str):
+    collection = db.Pipelines
+    await collection.delete_one({"_id": ObjectId(pipeline_id)})
 
 
 async def create_dashboard(db: AsyncIOMotorDatabase, dashboard: Dashboard):
@@ -194,7 +199,7 @@ async def get_chart(
     return doc["charts"][0]
 
 
-async def edit_dashboard_chart(
+async def edit_chart(
     db: AsyncIOMotorDatabase, dashboard_id: str, chart: Chart
 ):
     collection = db.Dashboards
@@ -207,3 +212,13 @@ async def edit_dashboard_chart(
         return_document=ReturnDocument.AFTER,
     )
     return doc
+
+
+async def delete_chart(
+    db: AsyncIOMotorDatabase, dashboard_id: str, chart_id: str
+):  
+    collection = db.Dashboards
+    await collection.find_one_and_update(
+        {"_id": ObjectId(dashboard_id)},
+        {"$pull": {"charts": {"id": chart_id}}}
+    )

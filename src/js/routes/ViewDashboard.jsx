@@ -10,6 +10,7 @@ import "react-resizable/css/styles.css";
 export default function ViewDashboard() {
     const { dashboardId } = useParams();
     const [dashboard, setDashboard] = useState(null);
+    const [charts, setCharts] = useState({});
     const [lastUpdated, setLastUpdated] = useState(new Date());
 
     useEffect(() => {
@@ -18,6 +19,9 @@ export default function ViewDashboard() {
                 params: { dashboard_id: dashboardId },
             });
             setDashboard(result.data);
+            let _charts = result.data;
+            _charts = Object.fromEntries(_charts.map(c => [c.id, c]));
+            setCharts(_charts);
         };
         getData();
     }, [dashboardId]);
