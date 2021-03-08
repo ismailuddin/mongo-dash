@@ -12,7 +12,8 @@ import Icons from "../components/Icons";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Modal from "../components/Modal";
-import ViewDashboard from "../routes/ViewDashboard";
+import ViewDashboardA from "../routes/ViewDashboardA";
+import ViewDashboardB from "../routes/ViewDashboardB";
 import EditDashboard from "./EditDashboard";
 
 function DashboardsHome() {
@@ -119,7 +120,7 @@ export default function Dashboards() {
                     <EditDashboard />
                 </Route>
                 <Route path={`${match.path}/view/:dashboardId`}>
-                    <ViewDashboard />
+                    <ViewDashboardA />
                 </Route>
                 <Route path={`${match.path}`}>
                     <DashboardsHome />

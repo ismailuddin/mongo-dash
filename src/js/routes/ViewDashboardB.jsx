@@ -55,39 +55,41 @@ export default function ViewDashboard() {
                     </Button.Primary>
                 </div>
             </div>
-            <ResponsiveGridLayout
-                className="layout"
-                layouts={layouts}
-                cols={12}
-                rowHeight={30}
-                // width={1200}
-                breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-                cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-                onResizeStop={() => setLastUpdated(new Date())}
-            >
-                <div
-                    className="p-3 bg-white rounded-md m-2"
-                    key="a"
+            <div className="w-full p-4">
+                <ResponsiveGridLayout
+                    className="layout"
+                    layouts={layouts}
+                    cols={12}
+                    rowHeight={30}
+                    // width={1200}
+                    breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+                    cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+                    // onResizeStop={() => setLastUpdated(new Date())}
                 >
-                    a
-                </div>
-                <div
-                    className="p-3 bg-white rounded-md m-2"
-                    key="b"
-                >
-                    b
-                </div>
-                <div
-                    className="p-3 bg-white rounded-md m-2"
-                    key="c"
-                >
-                    <Chart
-                        key={dashboard.charts[1].id}
-                        chart={dashboard.charts[1]}
-                        lastUpdated={lastUpdated}
-                    />
-                </div>
-            </ResponsiveGridLayout>
+                    <div
+                        className="p-3 bg-white rounded-md m-2"
+                        key="a"
+                    >
+                        a
+                    </div>
+                    <div
+                        className="p-3 bg-white rounded-md m-2"
+                        key="b"
+                    >
+                        b
+                    </div>
+                    <div
+                        className="p-3 bg-white rounded-md m-2"
+                        key="c"
+                    >
+                        <Chart
+                            key={dashboard.charts[1].id}
+                            chart={dashboard.charts[1]}
+                            lastUpdated={lastUpdated}
+                        />
+                    </div>
+                </ResponsiveGridLayout>
+            </div>
             <div className="p-4 grid grid-cols-12 gap-4">
                 {dashboard.charts.map((chart, i) => (
                     <div className="p-3 bg-white col-span-6 rounded-md">

@@ -173,7 +173,7 @@ export default function AddChart({ dashboardId, reloadCharts }) {
                     <PuffLoader color={"#22C55E"} loading={loading} size={80} />
                 </div>
             )}
-            <div className="mb-2">
+            <div className="mb-2" style={{ height: "400px"}}>
                 {!loading && plotData.length > 0 && <TimeseriesLine data={plotData} />}
                 {!loading && plotData.length == 0 && (
                     <div className="py-24 flex items-center justify-center">

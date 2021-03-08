@@ -45,12 +45,12 @@ export default function ViewDashboard() {
             window.interval = setInterval(() => {
                 const now = new Date();
                 setTimeFilter(now.setHours(now.getHours() - 1));
-            }, 30 * 1000);
+            }, 5 * 1000);
         } else {
             clearInterval(window.interval);
         }
         setIsLive(!isLive);
-    }
+    };
 
     useEffect(() => {
         const getData = async () => {
@@ -83,7 +83,10 @@ export default function ViewDashboard() {
             </div>
             <div className="p-4 grid grid-cols-12 gap-4">
                 {dashboard.charts.map((chart, i) => (
-                    <div className="p-3 bg-white col-span-6 rounded-md">
+                    <div
+                        className="p-3 bg-white col-span-6 rounded-md"
+                        style={{ height: "400px" }}
+                    >
                         <Chart
                             key={chart.id}
                             chart={chart}
