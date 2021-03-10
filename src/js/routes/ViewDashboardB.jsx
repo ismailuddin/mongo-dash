@@ -1,21 +1,61 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
-import Button from "../components/Button";
-import Chart from "./Chart";
-import Icons from "../components/Icons";
-import GridLayout from "react-grid-layout";
+import classNames from "classnames";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import Button from "../components/Button";
+import Chart from "./Chart";
+import Icons from "../components/Icons";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
+
+function GoLive({ isLive, toggleGoLive }) {
+    const classes = classNames(
+        "relative rounded-md border px-4 py-2 box-border border-green-500 font-semibold focus:outline-none my-2 text-sm mr-2 transition duration-300",
+        {
+            "bg-white": isLive,
+            "text-green-600": isLive,
+            "hover:bg-green-500": isLive,
+            "hover:text-white": isLive,
+            "bg-green-500": !isLive,
+            "text-black": !isLive,
+            "hover:bg-green-400": !isLive,
+            "hover:border-green-400": !isLive,
+        }
+    );
+    return (
+        <button onClick={toggleGoLive} className={classes}>
+            {isLive && (
+                <span class="absolute flex h-3 w-3 right-0 top-0 -mt-1 -mr-1">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                </span>
+            )}
+            {isLive ? "LIVE" : "Go live"}
+        </button>
+    );
+}
 
 export default function ViewDashboard() {
     const { dashboardId } = useParams();
     const [dashboard, setDashboard] = useState(null);
-    // const [charts, setCharts] = useState({});
     const [lastUpdated, setLastUpdated] = useState(new Date());
+    const [isLive, setIsLive] = useState(false);
+    const [timeFilter, setTimeFilter] = useState(null);
+
+    const toggleGoLive = () => {
+        if (!isLive) {
+            window.interval = setInterval(() => {
+                const now = new Date();
+                setTimeFilter(now.setHours(now.getHours() - 1));
+            }, 5 * 1000);
+        } else {
+            clearInterval(window.interval);
+        }
+        setIsLive(!isLive);
+    };
 
     useEffect(() => {
         const getData = async () => {
@@ -23,22 +63,26 @@ export default function ViewDashboard() {
                 params: { dashboard_id: dashboardId },
             });
             setDashboard(result.data);
-            // let _charts = result.data;
-            // _charts = Object.fromEntries(_charts.map(c => [c.id, c]));
-            // setCharts(_charts);
         };
         getData();
     }, [dashboardId]);
     if (dashboard == null) {
         return null;
     }
-    const layouts = {
-        lg: [
-            { i: "a", x: 0, y: 0, w: 1, h: 2 },
-            { i: "b", x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4 },
-            { i: "c", x: 4, y: 0, w: 4, h: 12, minW: 4, minH: 8 },
-        ],
-    };
+
+    let layouts = { lg: [] };
+    dashboard.charts.forEach((chart, i) => {
+        layouts.lg.push({
+            i: chart.id,
+            x: (i * 6) % 12,
+            y: Math.floor(i / 2) * 6,
+            w: 6,
+            h: 6,
+            minW: 4,
+            minH: 4,
+        });
+    });
+
     return (
         <>
             <div className="bg-white p-4 border-b border-blueGray-200 flex justify-between">
@@ -47,6 +91,7 @@ export default function ViewDashboard() {
                     {dashboard.name}
                 </h2>
                 <div className="rounded-md bg-white px-2 flex items-center">
+                    <GoLive isLive={isLive} toggleGoLive={toggleGoLive} />
                     <Link to={`/dashboards/edit/${dashboardId}`}>
                         <Button.Primary>Edit dashboard</Button.Primary>
                     </Link>
@@ -59,47 +104,29 @@ export default function ViewDashboard() {
                 <ResponsiveGridLayout
                     className="layout"
                     layouts={layouts}
-                    cols={12}
+                    draggableHandle=".dragHandle"
                     rowHeight={30}
-                    // width={1200}
-                    breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+                    breakpoints={{
+                        lg: 1200,
+                        md: 996,
+                        sm: 768,
+                        xs: 480,
+                        xxs: 0,
+                    }}
                     cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-                    // onResizeStop={() => setLastUpdated(new Date())}
                 >
-                    <div
-                        className="p-4 bg-white rounded-md m-2"
-                        key="a"
-                    >
-                        a
-                    </div>
-                    <div
-                        className="p-4 bg-white rounded-md m-2"
-                        key="b"
-                    >
-                        b
-                    </div>
-                    <div
-                        className="p-4 bg-white rounded-md m-2"
-                        key="c"
-                    >
-                        <Chart
-                            key={dashboard.charts[1].id}
-                            chart={dashboard.charts[1]}
-                            lastUpdated={lastUpdated}
-                        />
-                    </div>
+                    {layouts.lg.map((layout, i) => (
+                        <div key={layout.i} className="p-2">
+                            <div className="p-4 bg-white rounded-md w-full h-full">
+                                <Chart
+                                    chart={dashboard.charts[i]}
+                                    lastUpdated={lastUpdated}
+                                    incomingTimeFilter={timeFilter}
+                                />
+                            </div>
+                        </div>
+                    ))}
                 </ResponsiveGridLayout>
-            </div>
-            <div className="p-4 grid grid-cols-12 gap-4">
-                {dashboard.charts.map((chart, i) => (
-                    <div className="p-3 bg-white col-span-6 rounded-md">
-                        <Chart
-                            key={chart.id}
-                            chart={chart}
-                            lastUpdated={lastUpdated}
-                        />
-                    </div>
-                ))}
             </div>
         </>
     );

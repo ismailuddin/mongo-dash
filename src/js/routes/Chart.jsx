@@ -85,7 +85,7 @@ export default function Chart({
 
     return (
         <div className="group h-full flex flex-col">
-            <div className="flex justify-between items-start flex-shrink">
+            <div className="flex justify-between items-start flex-shrink dragHandle">
                 <h4 className="font-semibold text-md mb-0">{chart.name}</h4>
                 <div className="group-hover:opacity-100 opacity-0 transition-opacity duration-300">
                     <div className="flex gap-x-1">
