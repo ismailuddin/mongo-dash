@@ -36,7 +36,7 @@ export default function ViewDashboard() {
         lg: [
             { i: "a", x: 0, y: 0, w: 1, h: 2 },
             { i: "b", x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4 },
-            { i: "c", x: 4, y: 0, w: 4, h: 12, minW: 4, minH: 12 },
+            { i: "c", x: 4, y: 0, w: 4, h: 12, minW: 4, minH: 8 },
         ],
     };
     return (
@@ -55,7 +55,7 @@ export default function ViewDashboard() {
                     </Button.Primary>
                 </div>
             </div>
-            <div className="w-full p-4">
+            <div className="w-full p-0">
                 <ResponsiveGridLayout
                     className="layout"
                     layouts={layouts}
@@ -67,19 +67,19 @@ export default function ViewDashboard() {
                     // onResizeStop={() => setLastUpdated(new Date())}
                 >
                     <div
-                        className="p-3 bg-white rounded-md m-2"
+                        className="p-4 bg-white rounded-md m-2"
                         key="a"
                     >
                         a
                     </div>
                     <div
-                        className="p-3 bg-white rounded-md m-2"
+                        className="p-4 bg-white rounded-md m-2"
                         key="b"
                     >
                         b
                     </div>
                     <div
-                        className="p-3 bg-white rounded-md m-2"
+                        className="p-4 bg-white rounded-md m-2"
                         key="c"
                     >
                         <Chart
