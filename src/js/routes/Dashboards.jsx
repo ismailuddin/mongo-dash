@@ -12,8 +12,7 @@ import Icons from "../components/Icons";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Modal from "../components/Modal";
-// import ViewDashboard from "../routes/ViewDashboardA";
-import ViewDashboard from "../routes/ViewDashboardB";
+import ViewDashboard from "../routes/ViewDashboard";
 import EditDashboard from "./EditDashboard";
 
 function DashboardsHome() {

@@ -100,12 +100,12 @@ export default function ViewDashboard() {
                     </Button.Primary>
                 </div>
             </div>
-            <div className="w-full p-0">
+            <div className="w-full h-full p-0">
                 <ResponsiveGridLayout
                     className="layout"
                     layouts={layouts}
                     draggableHandle=".dragHandle"
-                    rowHeight={30}
+                    rowHeight={50}
                     breakpoints={{
                         lg: 1200,
                         md: 996,
