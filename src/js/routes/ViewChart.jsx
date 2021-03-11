@@ -205,7 +205,7 @@ export default function ViewChart({ dashboardId, reloadCharts }) {
                     <PuffLoader color={"#22C55E"} loading={loading} size={80} />
                 </div>
             )}
-            <div className="mb-2" style={{ height: "400px" }}>
+            <div className="my-2 flex flex-col" style={{ height: "400px" }}>
                 {!loading && plotData.length > 0 && (
                     <TimeseriesLine data={plotData} />
                 )}
