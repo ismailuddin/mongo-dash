@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { DateTime } from "luxon";
+import { useResizeDetector } from "react-resize-detector";
 import TimeseriesLine from "../components/TimeseriesLine";
 import Button from "../components/Button";
 import PuffLoader from "react-spinners/PuffLoader";
@@ -9,13 +10,12 @@ import Icons from "../components/Icons";
 export default function Chart({
     chart,
     lastUpdated,
-    incomingTimeFilter = null,
 }) {
+    const { width, height, ref } = useResizeDetector();
     let mostRecentUpdate = new Date();
     const now = new Date();
     const [plotData, setPlotData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [internalLastUpdate, setInternalLastUpdate] = useState(new Date());
     const [timeFilter, setTimeFilter] = useState(
         now.setDate(now.getDate() - 1)
     );
@@ -67,25 +67,18 @@ export default function Chart({
         getPlotData();
         setErrMsg(null);
         setSuccessMsg(null);
-    }, [location.key]);
+    }, [timeFilter]);
 
     useEffect(() => {
         getPlotData(false);
-        setInternalLastUpdate(new Date());
-        mostRecentUpdate = new Date(
-            Math.max(...[lastUpdated, new Date()])
-        );
-    }, [lastUpdated, timeFilter]);
-
-    useEffect(() => {
-        if (incomingTimeFilter !== null) {
-            setTimeFilter(incomingTimeFilter);
-        }
-    }, [incomingTimeFilter]);
+    }, [lastUpdated]);
 
     return (
-        <div className="group h-full flex flex-col">
-            <div className="flex justify-between items-start flex-shrink dragHandle">
+        <div ref={ref} className="group h-full flex flex-col">
+            <div
+                style={{ cursor: "grab" }}
+                className="flex justify-between items-start flex-shrink dragHandle"
+            >
                 <h4 className="font-semibold text-md mb-0">{chart.name}</h4>
                 <div className="group-hover:opacity-100 opacity-0 transition-opacity duration-300">
                     <div className="flex gap-x-1">
@@ -134,7 +127,9 @@ export default function Chart({
                     <div className="text-right mt-1 pr-1">
                         <p className="font-light text-xs text-blueGray-400">
                             Last updated{" "}
-                            {DateTime.fromJSDate(mostRecentUpdate).toFormat("H:m:s")}
+                            {DateTime.fromJSDate(mostRecentUpdate).toFormat(
+                                "H:m:s"
+                            )}
                         </p>
                     </div>
                 </div>
@@ -145,7 +140,11 @@ export default function Chart({
                 </div>
             )}
             {!loading && plotData.length > 0 && (
-                <TimeseriesLine data={plotData} />
+                <TimeseriesLine
+                    width={width - 25}
+                    height={height - 40}
+                    data={plotData}
+                />
             )}
             {!loading && plotData.length == 0 && (
                 <div className="py-24 flex items-center justify-center h-full">

@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import "../../css/override.css";
 import Button from "../components/Button";
 import Chart from "./Chart";
 import Icons from "../components/Icons";
@@ -43,13 +44,22 @@ export default function ViewDashboard() {
     const [dashboard, setDashboard] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(new Date());
     const [isLive, setIsLive] = useState(false);
-    const [timeFilter, setTimeFilter] = useState(null);
-
+    // const [timeFilter, setTimeFilter] = useState(null);
+    const [layoutStore, setLayoutStore] = useState({});
+    const resizeHandler = (
+        <div
+            style={{ cursor: "nwse-resize" }}
+            className="absolute right-0 bottom-0 h-6 w-6 rounded-full border border-blueGray-200 bg-white text-xs flex items-center justify-center p-1 shadow-md"
+        >
+            <div className="h-2 w-2 border-b-2 border-r-2 border-blueGray-400"></div>
+        </div>
+    );
     const toggleGoLive = () => {
         if (!isLive) {
             window.interval = setInterval(() => {
                 const now = new Date();
-                setTimeFilter(now.setHours(now.getHours() - 1));
+                setLastUpdated(new Date());
+                // setTimeFilter(now.setHours(now.getHours() - 1));
             }, 5 * 1000);
         } else {
             clearInterval(window.interval);
@@ -70,9 +80,8 @@ export default function ViewDashboard() {
         return null;
     }
 
-    let layouts = { lg: [] };
-    dashboard.charts.forEach((chart, i) => {
-        layouts.lg.push({
+    const layouts = { lg: dashboard.charts.map((chart, i) => {
+        return {
             i: chart.id,
             x: (i * 6) % 12,
             y: Math.floor(i / 2) * 6,
@@ -80,8 +89,8 @@ export default function ViewDashboard() {
             h: 6,
             minW: 4,
             minH: 4,
-        });
-    });
+        };
+    })};
 
     return (
         <>
@@ -106,6 +115,7 @@ export default function ViewDashboard() {
                     layouts={layouts}
                     draggableHandle=".dragHandle"
                     rowHeight={50}
+                    resizeHandle={resizeHandler}
                     breakpoints={{
                         lg: 1200,
                         md: 996,
@@ -113,6 +123,7 @@ export default function ViewDashboard() {
                         xs: 480,
                         xxs: 0,
                     }}
+                    onLayoutChange={layout => setLayoutStore(layout)}
                     cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
                 >
                     {layouts.lg.map((layout, i) => (
@@ -121,7 +132,7 @@ export default function ViewDashboard() {
                                 <Chart
                                     chart={dashboard.charts[i]}
                                     lastUpdated={lastUpdated}
-                                    incomingTimeFilter={timeFilter}
+                                    // incomingTimeFilter={timeFilter}
                                 />
                             </div>
                         </div>

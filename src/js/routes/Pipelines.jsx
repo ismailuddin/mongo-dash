@@ -9,7 +9,7 @@ import {
     NavLink
 } from "react-router-dom";
 import AddPipeline from "./AddPipeline";
-import ViewPipeline from "./ViewPipeline";
+import ViewEditPipeline from "./ViewEditPipeline";
 import Button from "../components/Button";
 
 export default function Pipelines() {
@@ -81,7 +81,7 @@ export default function Pipelines() {
                         <AddPipeline reloadPipelines={getPipelines} />
                     </Route>
                     <Route path={`${match.path}/view/:pipelineId`}>
-                        <ViewPipeline reloadPipelines={getPipelines} />
+                        <ViewEditPipeline reloadPipelines={getPipelines} />
                     </Route>
                     <Route path={`${match.path}`}>
                         <div className="w-full h-full flex items-center justify-center bg-blueGray-100">

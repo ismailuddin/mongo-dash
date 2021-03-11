@@ -1,12 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import Plot from "react-plotly.js";
-import { useResizeDetector } from "react-resize-detector";
 
-function TimeseriesLine({ data }) {
-    const { width, height, ref } = useResizeDetector();
-    console.log(height);
+function TimeseriesLine({ data, width=null, height }) {
     return (
-        <div ref={ref} className="flex-grow">
+        <div className="h-full">
             <Plot
                 config={{
                     displayModeBar: false,
@@ -22,12 +19,12 @@ function TimeseriesLine({ data }) {
                         b: 0
                     },
                     xaxis: {
-                        automargin: true
+                        automargin: true,
                     },
                     yaxis: {
                         automargin: true
                     },
-                    height: 0.95 * height,
+                    height: height,
                 }}
             />
         </div>

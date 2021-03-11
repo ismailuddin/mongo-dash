@@ -14,7 +14,7 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import Icons from "../components/Icons";
 import AddChart from "./AddChart";
-import ViewChart from "./ViewChart";
+import ViewEditChart from "./ViewEditChart";
 import Modal from "../components/Modal";
 
 export default function EditDashboard() {
@@ -152,7 +152,7 @@ export default function EditDashboard() {
                             />
                         </Route>
                         <Route path={`${match.url}/charts/view/:chartId`}>
-                            <ViewChart
+                            <ViewEditChart
                                 dashboardId={dashboardId}
                                 reloadCharts={getData}
                             />

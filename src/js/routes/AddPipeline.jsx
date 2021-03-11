@@ -12,8 +12,6 @@ export default function AddPipeline({ reloadPipelines }) {
     const [collection, setCollection] = useState(null);
     const [pipelineName, setPipelineName] = useState("");
     const [pipelineStages, setPipelineStages] = useState("");
-    const [errMsg, setErrMsg] = useState(null);
-    const [successMsg, setSuccessMsg] = useState(null);
 
     useEffect(() => {
         const getCollections = async () => {
@@ -34,7 +32,6 @@ export default function AddPipeline({ reloadPipelines }) {
                     stages: pipelineStages,
                 }
             );
-            setErrMsg(null);
             toast.success("Pipeline successfully registered!");
             reloadPipelines();
             history.push(`/pipelines/view/${pipelineId}`);
