@@ -12,6 +12,7 @@ function TimeseriesLine({ data, width=null, height }) {
                 layout={{
                     autosize: true,
                     width: width,
+                    uirevision: true,
                     margin: {
                         t: 0,
                         l: 0,

@@ -22,6 +22,36 @@ export default function Chart({
     const [errMsg, setErrMsg] = useState(null);
     const [successMsg, setSuccessMsg] = useState(null);
 
+    const since1hr = () => {
+        const now = new Date();
+        now.setHours(now.getHours() - 1);
+        setTimeFilter(now);
+    }
+    
+    const since1day = () => {
+        const now = new Date();
+        now.setDate(now.getDate() - 1);
+        setTimeFilter(now);
+    }
+
+    const since1wk = () => {
+        const now = new Date();
+        now.setDate(now.getDate() - 7);
+        setTimeFilter(now);
+    }
+
+    const since1mo = () => {
+        const now = new Date();
+        now.setDate(now.getDate() - 28);
+        setTimeFilter(now);
+    }
+
+    const since3mo = () => {
+        const now = new Date();
+        now.setDate(now.getDate() - 84);
+        setTimeFilter(now);
+    }
+
     const formatData = (data) => {
         const groupedData = [];
         const uniqueKeys = [...new Set(data.map((d) => d.grouping))];
@@ -89,38 +119,27 @@ export default function Chart({
                             -/-
                         </Button.GreyXS>
                         <Button.GreyXS
-                            onClick={() =>
-                                setTimeFilter(now.setHours(now.getHours() - 1))
-                            }
+                            onClick={since1hr}
                         >
                             1 h
                         </Button.GreyXS>
                         <Button.GreyXS
-                            onClick={() =>
-                                setTimeFilter(now.setDate(now.getDate() - 1))
-                            }
+                            onClick={since1day}
                         >
                             1 d
                         </Button.GreyXS>
                         <Button.GreyXS
-                            onClick={() =>
-                                setTimeFilter(now.setDate(now.getDate() - 7))
-                            }
+                            onClick={since1wk}
                         >
                             1 wk
                         </Button.GreyXS>
                         <Button.GreyXS
-                            onClick={() =>
-                                setTimeFilter(now.setDate(now.getDate() - 28))
-                            }
+                            onClick={since1mo}
                         >
                             1 mo
                         </Button.GreyXS>
                         <Button.GreyXS
-                            onClick={() =>
-                                setTimeFilter(now.setDate(now.getDate() - 84))
-                            }
-                        >
+                            onClick={since3mo}>
                             3 mo
                         </Button.GreyXS>
                     </div>
