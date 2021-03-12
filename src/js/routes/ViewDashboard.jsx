@@ -44,8 +44,7 @@ export default function ViewDashboard() {
     const [dashboard, setDashboard] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(new Date());
     const [isLive, setIsLive] = useState(false);
-    // const [timeFilter, setTimeFilter] = useState(null);
-    const [layoutStore, setLayoutStore] = useState({});
+    const [layoutStore, setLayoutStore] = useState([]);
     const resizeHandler = (
         <div
             style={{ cursor: "nwse-resize" }}
@@ -54,12 +53,11 @@ export default function ViewDashboard() {
             <div className="h-2 w-2 border-b-2 border-r-2 border-blueGray-400"></div>
         </div>
     );
+
     const toggleGoLive = () => {
         if (!isLive) {
             window.interval = setInterval(() => {
-                const now = new Date();
                 setLastUpdated(new Date());
-                // setTimeFilter(now.setHours(now.getHours() - 1));
             }, 5 * 1000);
         } else {
             clearInterval(window.interval);
@@ -67,30 +65,27 @@ export default function ViewDashboard() {
         setIsLive(!isLive);
     };
 
+    const updateChartLayout = async (layout) => {
+        setLayoutStore(layout)
+        await axios.patch("/api/dashboards/edit_chart_layout", {
+            dashboard_id: dashboardId,
+            charts_layout: layout
+        });
+    }
+
     useEffect(() => {
         const getData = async () => {
-            const result = await axios.get(`/api/dashboards/view`, {
+            const { data } = await axios.get(`/api/dashboards/view`, {
                 params: { dashboard_id: dashboardId },
             });
-            setDashboard(result.data);
+            setDashboard(data);
+            setLayoutStore(data.charts_layout);
         };
         getData();
     }, [dashboardId]);
     if (dashboard == null) {
         return null;
     }
-
-    const layouts = { lg: dashboard.charts.map((chart, i) => {
-        return {
-            i: chart.id,
-            x: (i * 6) % 12,
-            y: Math.floor(i / 2) * 6,
-            w: 6,
-            h: 6,
-            minW: 4,
-            minH: 4,
-        };
-    })};
 
     return (
         <>
@@ -112,7 +107,7 @@ export default function ViewDashboard() {
             <div className="w-full h-full p-0">
                 <ResponsiveGridLayout
                     className="layout"
-                    layouts={layouts}
+                    layouts={{lg: layoutStore}}
                     draggableHandle=".dragHandle"
                     rowHeight={50}
                     resizeHandle={resizeHandler}
@@ -123,16 +118,15 @@ export default function ViewDashboard() {
                         xs: 480,
                         xxs: 0,
                     }}
-                    onLayoutChange={layout => setLayoutStore(layout)}
+                    onLayoutChange={layout => updateChartLayout(layout)}
                     cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
                 >
-                    {layouts.lg.map((layout, i) => (
+                    {layoutStore.map((layout, i) => (
                         <div key={layout.i} className="p-2">
                             <div className="p-4 bg-white rounded-md w-full h-full">
                                 <Chart
                                     chart={dashboard.charts[i]}
                                     lastUpdated={lastUpdated}
-                                    // incomingTimeFilter={timeFilter}
                                 />
                             </div>
                         </div>

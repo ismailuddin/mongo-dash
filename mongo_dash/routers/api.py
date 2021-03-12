@@ -195,8 +195,8 @@ async def create_dashboard(
     return inserted_id
 
 
-@router.patch("/dashboards/edit")
-async def edit_dashboard(
+@router.patch("/dashboards/edit_name")
+async def edit_dashboard_name(
     dashboard: CreateEditDashboard,
     db=Depends(database.get_admin_database)
 ):
@@ -204,6 +204,19 @@ async def edit_dashboard(
         db=db,
         dashboard_id=dashboard.dashboard_id,
         name=dashboard.name
+    )
+    return
+
+
+@router.patch("/dashboards/edit_chart_layout")
+async def update_dashboard_charts_layout(
+    dashboard: CreateEditDashboard,
+    db=Depends(database.get_admin_database)
+):
+    await database.edit_dashboard_layout(
+        db=db,
+        dashboard_id=dashboard.dashboard_id,
+        charts_layout=dashboard.charts_layout
     )
     return
 

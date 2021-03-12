@@ -42,12 +42,6 @@ class Chart(BaseModel):
     date_modified: Optional[datetime]
 
 
-class Dashboard(MongoDBModel):
-    database_name: str
-    name: str
-    charts: List[str] = []
-
-
 class CreateEditPipeline(BaseModel):
     pipeline_id: Optional[str]
     name: str
@@ -55,9 +49,16 @@ class CreateEditPipeline(BaseModel):
     stages: str
 
 
+class Dashboard(MongoDBModel):
+    database_name: str
+    name: str
+    charts: List[str] = []
+    charts_layout: List[dict] = []
+
 class CreateEditDashboard(BaseModel):
     dashboard_id: Optional[str]
-    name: str
+    name: Optional[str]
+    charts_layout: List[dict] = []
 
 
 class CreateEditChart(BaseModel):

@@ -50,7 +50,7 @@ const DatabaseSelector = ({ databases, currentDatabase }) => {
             >
                 <div className="flex items-center">
                     <Icons.Database className="w-4 h-4 text-blueGray-500 mr-2 stroke-2" />
-                    Select database
+                    {truncate(currentDatabase)}
                 </div>
                 <Icons.ChevronDown className="ml-4 h-4 w-4" />
             </button>

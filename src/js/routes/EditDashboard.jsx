@@ -37,9 +37,9 @@ export default function EditDashboard() {
     }, [dashboardId]);
     const editDashboardName = async () => {
         try {
-            await axios.patch("/api/dashboards/edit", {
-                name: dashboardName,
-                dashboard_id: dashboardId
+            await axios.patch("/api/dashboards/edit_name", {
+                dashboard_id: dashboardId,
+                name: dashboardName
             });
             setShowModal(false);
             getData();

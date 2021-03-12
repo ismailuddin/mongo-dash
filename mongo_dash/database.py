@@ -1,4 +1,5 @@
 import json
+import math
 from datetime import datetime
 from typing import List
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
@@ -12,6 +13,7 @@ from .schemas import Pipeline, Dashboard, Chart
 async def get_client() -> AsyncIOMotorClient:
     client = AsyncIOMotorClient(Config.MONGO_URI)
     return client
+
 
 async def get_admin_database() -> AsyncIOMotorDatabase:
     client = AsyncIOMotorClient(Config.MONGO_URI)
@@ -176,6 +178,17 @@ async def edit_dashboard_name(
     return doc
 
 
+async def edit_dashboard_layout(
+    db: AsyncIOMotorDatabase, dashboard_id: str, charts_layout: List[dict]
+):
+    collection = db.Dashboards
+    doc = await collection.find_one_and_update(
+        {"_id": ObjectId(dashboard_id)},
+        {"$set": {"charts_layout": charts_layout}},
+        return_document=ReturnDocument.AFTER,
+    )
+
+
 async def delete_dashboard(db: AsyncIOMotorClient, dashboard_id: str):
     collection = db.Dashboards
     await collection.delete_one({"_id": ObjectId(dashboard_id)})
@@ -185,9 +198,26 @@ async def add_chart_to_dashboard(
     db: AsyncIOMotorDatabase, dashboard_id: str, chart: Chart
 ) -> str:
     collection = db.Dashboards
+    dashboard = await collection.find_one(
+        {"_id": ObjectId(dashboard_id)}, {"charts": 1}
+    )
+    n_charts = len(dashboard["charts"])
     doc = await collection.find_one_and_update(
         {"_id": ObjectId(dashboard_id)},
-        {"$push": {"charts": chart.dict()}},
+        {
+            "$push": {
+                "charts": chart.dict(),
+                "charts_layout": {
+                    "i": chart.id,
+                    "x": (n_charts * 6) % 12,
+                    "y": math.floor(n_charts / 2) * 6,
+                    "w": 6,
+                    "h": 6,
+                    "minW": 4,
+                    "minH": 4,
+                },
+            }
+        },
         return_document=ReturnDocument.AFTER,
     )
     return chart.id
@@ -221,9 +251,14 @@ async def edit_chart(
 
 async def delete_chart(
     db: AsyncIOMotorDatabase, dashboard_id: str, chart_id: str
-):  
+):
     collection = db.Dashboards
     await collection.find_one_and_update(
         {"_id": ObjectId(dashboard_id)},
-        {"$pull": {"charts": {"id": chart_id}}}
+        {
+            "$pull": {
+                "charts": {"id": chart_id},
+                "charts_layout": {"i": chart_id},
+            }
+        },
     )
