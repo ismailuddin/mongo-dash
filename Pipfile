@@ -24,7 +24,7 @@ aiofiles = "*"
 jinja2 = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.9"
 
 [pipenv]
 allow_prereleases = true
