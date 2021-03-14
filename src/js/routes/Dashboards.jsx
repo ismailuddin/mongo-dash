@@ -13,18 +13,22 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import Modal from "../components/Modal";
 import ViewDashboard from "../routes/ViewDashboard";
+import BarLoader from "react-spinners/BarLoader";
 import EditDashboard from "./EditDashboard";
 
 function DashboardsHome() {
     const location = useLocation();
     let match = useRouteMatch();
     const [showModal, setShowModal] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [dashboardName, setDashboardName] = useState("");
     const [dashboards, setDashboards] = useState([]);
 
     const getDashboards = async () => {
+        setLoading(true);
         const result = await axios.get("/api/dashboards/view_all");
         setDashboards(result.data);
+        setLoading(false);
     };
     useEffect(() => {
         getDashboards();
@@ -56,6 +60,14 @@ function DashboardsHome() {
                 </p>
             </div>
             <div className="p-4 h-full">
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center w-full">
+                        <p className="mb-2">
+                            Fetching dashboards...
+                        </p>
+                        <BarLoader color={"#22C55E"} loading={loading} size={80} />
+                    </div>
+                ) : null}
                 <div className="grid grid-cols-6 my-4 gap-4">
                     {dashboards.map((dashboard) => (
                         <NavLink

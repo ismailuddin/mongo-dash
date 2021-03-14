@@ -3,6 +3,7 @@ import PuffLoader from "react-spinners/PuffLoader";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useLocation, useParams, useHistory } from "react-router-dom";
+import BarLoader from "react-spinners/BarLoader";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import Icons from "../components/Icons";
@@ -15,6 +16,7 @@ export default function ViewEditChart({ dashboardId, reloadCharts }) {
     const { chartId } = useParams();
     const [chart, setChart] = useState({});
     const [loading, setLoading] = useState(false);
+    const [loadingPlotData, setLoadingPlotData] = useState(false);
     const [chartName, setChartName] = useState("");
     const [pipelineId, setPipelineId] = useState(null);
     const [chartType, setChartType] = useState("TimeseriesLine");
@@ -27,9 +29,10 @@ export default function ViewEditChart({ dashboardId, reloadCharts }) {
     });
     const [plotData, setPlotData] = useState([]);
 
-    const getChart = async () => {
+    const getChart = async (cancelToken) => {
         try {
-            getPipelines();
+            setLoading(true);
+            getPipelines(cancelToken);
             const result = await axios.get("/api/dashboards/charts/view", {
                 params: { chart_id: chartId, dashboard_id: dashboardId },
             });
@@ -37,35 +40,42 @@ export default function ViewEditChart({ dashboardId, reloadCharts }) {
             setChartName(result.data.name);
             setChartType(result.data.type_);
             setPipelineId(result.data.pipeline_id);
-            getPipeline(result.data.pipeline_id);
-            getPlotData(result.data.pipeline_id);
+            getPipeline(result.data.pipeline_id, cancelToken);
+            setLoading(false);
+            getPlotData(result.data.pipeline_id, cancelToken);
         } catch (error) {
             console.error(error);
         }
     };
 
-    const getPipelines = async () => {
+    const getPipelines = async (cancelToken) => {
         try {
-            const result = await axios.get("/api/pipelines/view_all");
+            const result = await axios.get("/api/pipelines/view_all", {
+                cancelToken: cancelToken.token
+            });
             setPipelines(result.data);
         } catch (error) {
             console.error(error);
         }
     };
-    const getPipeline = async (pipelineId) => {
+    const getPipeline = async (pipelineId, cancelToken) => {
         try {
             const result = await axios.get(`/api/pipelines/view`, {
+                cancelToken: cancelToken.token,
                 params: { pipeline_id: pipelineId },
             });
             setPipeline(result.data);
         } catch (error) {
-            toast.error("Error retrieving pipeline details");
+            if (!axios.isCancel(error)) {
+                toast.error("Error retrieving pipeline details");
+            }
         }
     };
-    const getPlotData = async (pipelineId) => {
+    const getPlotData = async (pipelineId, cancelToken) => {
         try {
-            setLoading(true);
+            setLoadingPlotData(true);
             const { data } = await axios.get("/api/pipelines/run", {
+                cancelToken: cancelToken.token,
                 params: {
                     pipeline_id: pipelineId,
                     limit: 5000,
@@ -86,10 +96,12 @@ export default function ViewEditChart({ dashboardId, reloadCharts }) {
                 });
             });
             setPlotData(groupedData);
-            setLoading(false);
+            setLoadingPlotData(false);
         } catch (error) {
-            toast.error("Error running pipeline!");
-            setLoading(false);
+            setLoadingPlotData(false);
+            if (!axios.isCancel(error)) {
+                toast.error("Error running pipeline!");
+            }
         }
     };
     const editChart = async () => {
@@ -135,8 +147,21 @@ export default function ViewEditChart({ dashboardId, reloadCharts }) {
     };
 
     useEffect(() => {
-        getChart();
+        const cancelToken = axios.CancelToken.source();
+        getChart(cancelToken);
+        return () => {
+            cancelToken.cancel();
+        }
     }, [location.key]);
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center w-full h-full">
+                <p className="mb-2">Fetching chart...</p>
+                <BarLoader color={"#22C55E"} loading={loading} size={80} />
+            </div>
+        );
+    }
 
     return (
         <div className="p-4">
@@ -200,16 +225,16 @@ export default function ViewEditChart({ dashboardId, reloadCharts }) {
                     </div>
                 </div>
             </div>
-            {loading && (
+            {loadingPlotData && (
                 <div className="flex w-full justify-center h-full py-14 items-center">
-                    <PuffLoader color={"#22C55E"} loading={loading} size={80} />
+                    <PuffLoader color={"#22C55E"} loading={loadingPlotData} size={80} />
                 </div>
             )}
             <div className="my-2">
-                {!loading && plotData.length > 0 && (
+                {!loadingPlotData && plotData.length > 0 && (
                     <TimeseriesLine height={400} data={plotData} />
                 )}
-                {!loading && plotData.length == 0 && (
+                {!loadingPlotData && plotData.length == 0 && (
                     <div className="py-24 flex items-center justify-center">
                         <h4 className="text-lg text-blueGray-400 font-semibold">
                             No data found!

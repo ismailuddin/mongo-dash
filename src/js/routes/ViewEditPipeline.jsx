@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useHistory } from "react-router-dom";
+import BarLoader from "react-spinners/BarLoader";
 import toast from "react-hot-toast";
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -10,6 +11,8 @@ import PipelinePreview from "../components/PipelinePreview";
 export default function ViewEditPipeline({ reloadPipelines }) {
     const history = useHistory();
     const { pipelineId } = useParams();
+    const [loading, setLoading] = useState(false);
+    const [loadingData, setLoadingData] = useState(false);
     const [collections, setCollections] = useState([]);
     const [pipelineResult, setPipelineResult] = useState("");
     const [pipeline, setPipeline] = useState({
@@ -21,12 +24,14 @@ export default function ViewEditPipeline({ reloadPipelines }) {
 
     useEffect(() => {
         const getData = async () => {
+            setLoading(true);
             const pipelineResult = await axios.get(`/api/pipelines/view`, {
                 params: { pipeline_id: pipelineId },
             });
             setPipeline(pipelineResult.data);
             const collectionsResult = await axios.get("/api/get_collections");
             setCollections(collectionsResult.data);
+            setLoading(false);
         };
         getData();
     }, [pipelineId]);
@@ -53,6 +58,7 @@ export default function ViewEditPipeline({ reloadPipelines }) {
                 params: { pipeline_id: pipelineId },
             });
             toast.success("Pipeline successfully deleted!");
+            reloadPipelines();
             history.push("/pipelines");
         } catch (error) {
             toast.error("Error deleting pipeline. Please try again!");
@@ -60,18 +66,29 @@ export default function ViewEditPipeline({ reloadPipelines }) {
     };
     const previewPipeline = async () => {
         try {
+            setLoadingData(true);
             const { data } = await axios.post("/api/pipelines/run_arbitrary", {
                 name: pipeline.name,
                 collection: pipeline.collection,
                 stages: pipeline.stages,
             });
             setPipelineResult(JSON.stringify(data, null, 1));
+            setLoadingData(false);
         } catch (error) {
+            setLoadingData(false);
             console.error(error);
             toast.error("Error running pipeline!");
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center w-full h-full">
+                <p className="mb-2">Fetching pipeline...</p>
+                <BarLoader color={"#22C55E"} loading={loading} size={80} />
+            </div>
+        );
+    }
     return (
         <div className="p-4">
             <h2 className="text-3xl text-blueGray-800 font-bold mb-4">
@@ -121,7 +138,15 @@ export default function ViewEditPipeline({ reloadPipelines }) {
             <h4 className="text-xl text-blueGray-800 font-bold mb-4">
                 Pipeline preview
             </h4>
-            <PipelinePreview value={pipelineResult} />
+            {loadingData ? (
+                <div className="flex flex-col items-center justify-center w-full h-24">
+                    <p className="mb-2">Fetching data...</p>
+                    <BarLoader color={"#22C55E"} loading={loadingData} size={80} />
+                </div>
+            ) : null}
+            {!loadingData ? (
+                <PipelinePreview value={pipelineResult} />
+            ) : null}
         </div>
     );
 }

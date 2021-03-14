@@ -64,12 +64,13 @@ export default function Chart({
         });
         return groupedData;
     };
-    const getPlotData = async (showLoading = true) => {
+    const getPlotData = async (showLoading = true, cancelToken) => {
         try {
             if (showLoading) {
                 setLoading(true);
             }
             const { data } = await axios.get("/api/pipelines/run", {
+                cancelToken: cancelToken.token,
                 params: {
                     pipeline_id: chart.pipeline_id,
                     from_timestamp: timeFilter,
@@ -83,7 +84,9 @@ export default function Chart({
             setErrMsg(null);
         } catch (error) {
             console.error(error);
-            setErrMsg("Error running pipeline!");
+            if (!axios.isCancel(error)) {
+                setErrMsg("Error running pipeline!");
+            }
             if (showLoading) {
                 setLoading(false);
             }
@@ -91,13 +94,21 @@ export default function Chart({
     };
 
     useEffect(() => {
-        getPlotData();
+        const cancelToken = axios.CancelToken.source();
+        getPlotData(true, cancelToken);
         setErrMsg(null);
         setSuccessMsg(null);
+        return () => {
+            cancelToken.cancel();
+        }
     }, [timeFilter]);
 
     useEffect(() => {
-        getPlotData(false);
+        const cancelToken = axios.CancelToken.source();
+        getPlotData(false, cancelToken);
+        return () => {
+            cancelToken.cancel();
+        }
     }, [lastUpdated]);
 
     return (

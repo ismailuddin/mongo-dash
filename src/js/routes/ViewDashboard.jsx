@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useHistory } from "react-router-dom";
 import classNames from "classnames";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
@@ -9,6 +9,7 @@ import "../../css/override.css";
 import Button from "../components/Button";
 import Chart from "./Chart";
 import Icons from "../components/Icons";
+import BarLoader from "react-spinners/BarLoader";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -41,7 +42,9 @@ function GoLive({ isLive, toggleGoLive }) {
 
 export default function ViewDashboard() {
     const { dashboardId } = useParams();
-    const [dashboard, setDashboard] = useState(null);
+    const history = useHistory();
+    const [dashboard, setDashboard] = useState({charts: []});
+    const [loading, setLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState(new Date());
     const [isLive, setIsLive] = useState(false);
     const [layoutStore, setLayoutStore] = useState([]);
@@ -66,27 +69,40 @@ export default function ViewDashboard() {
     };
 
     const updateChartLayout = async (layout) => {
-        setLayoutStore(layout)
+        setLayoutStore(layout);
         await axios.patch("/api/dashboards/edit_chart_layout", {
             dashboard_id: dashboardId,
-            charts_layout: layout
+            charts_layout: layout,
         });
-    }
+    };
 
     useEffect(() => {
         const getData = async () => {
-            const { data } = await axios.get(`/api/dashboards/view`, {
-                params: { dashboard_id: dashboardId },
-            });
-            setDashboard(data);
-            setLayoutStore(data.charts_layout);
+            try {
+                setLoading(true);
+                const { data } = await axios.get(`/api/dashboards/view`, {
+                    params: { dashboard_id: dashboardId },
+                });
+                setDashboard(data);
+                setLayoutStore(data.charts_layout);
+                setLoading(false);
+            } catch (error) {
+                console.error(error);
+                history.push("/");
+            }
         };
         getData();
     }, [dashboardId]);
-    if (dashboard == null) {
-        return null;
+    if (loading) {
+        return (
+            <div className="w-full h-64">
+                <div className="flex flex-col justify-center items-center">
+                    <p className="mb-2">Fetching dashboard...</p>
+                    <BarLoader color={"#22C55E"} loading={loading} size={80} />
+                </div>
+            </div>
+        );
     }
-
     return (
         <>
             <div className="bg-white p-4 border-b border-blueGray-200 flex justify-between">
@@ -107,7 +123,7 @@ export default function ViewDashboard() {
             <div className="w-full h-full p-0">
                 <ResponsiveGridLayout
                     className="layout"
-                    layouts={{lg: layoutStore}}
+                    layouts={{ lg: layoutStore }}
                     draggableHandle=".dragHandle"
                     rowHeight={50}
                     resizeHandle={resizeHandler}
@@ -118,7 +134,7 @@ export default function ViewDashboard() {
                         xs: 480,
                         xxs: 0,
                     }}
-                    onLayoutChange={layout => updateChartLayout(layout)}
+                    onLayoutChange={(layout) => updateChartLayout(layout)}
                     cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
                 >
                     {layoutStore.map((layout, i) => (

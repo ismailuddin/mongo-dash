@@ -7,53 +7,59 @@ import {
     Link,
     Switch,
     Route,
-    useHistory
+    useHistory,
 } from "react-router-dom";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Icons from "../components/Icons";
 import AddChart from "./AddChart";
 import ViewEditChart from "./ViewEditChart";
 import Modal from "../components/Modal";
+import BarLoader from "react-spinners/BarLoader";
 
 export default function EditDashboard() {
     const { dashboardId } = useParams();
     let match = useRouteMatch();
     const history = useHistory();
+    const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [dashboardName, setDashboardName] = useState("");
     const [dashboard, setDashboard] = useState({ charts: [] });
 
     const getData = async () => {
+        setLoading(true);
         const result = await axios.get(`/api/dashboards/view`, {
             params: { dashboard_id: dashboardId },
         });
         setDashboard(result.data);
         setDashboardName(result.data.name);
+        setLoading(false);
     };
+    
     useEffect(() => {
         getData();
     }, [dashboardId]);
+
     const editDashboardName = async () => {
         try {
             await axios.patch("/api/dashboards/edit_name", {
                 dashboard_id: dashboardId,
-                name: dashboardName
+                name: dashboardName,
             });
             setShowModal(false);
             getData();
-            toast.success("Dashboard name successfully updated!")
+            toast.success("Dashboard name successfully updated!");
         } catch (error) {
             if (error.response.status == 422) {
-                toast.error("Dashboard name successfully updated!")
+                toast.error("Dashboard name successfully updated!");
             }
         }
     };
     const deleteDashboard = async () => {
         try {
             await axios.delete("/api/dashboards/delete", {
-                params: { dashboard_id: dashboardId }
+                params: { dashboard_id: dashboardId },
             });
             toast.success("Dashboard successfully deleted!");
             history.push("/dashboards");
@@ -62,9 +68,16 @@ export default function EditDashboard() {
             toast.error("Error deleting dashboard!");
         }
     };
-
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center w-full h-full">
+                <p className="mb-2">Fetching dashboard...</p>
+                <BarLoader color={"#22C55E"} loading={loading} size={80} />
+            </div>
+        );
+    }
     return (
-        <>  
+        <>
             <div className="bg-white p-4 border-b border-blueGray-200">
                 <h2 className="text-3xl text-blueGray-800 font-bold mb-4">
                     <span className="font-light">Edit dashboard | </span>

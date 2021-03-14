@@ -11,21 +11,32 @@ import {
 import AddPipeline from "./AddPipeline";
 import ViewEditPipeline from "./ViewEditPipeline";
 import Button from "../components/Button";
+import BarLoader from "react-spinners/BarLoader";
 
 export default function Pipelines() {
     const location = useLocation();
     let match = useRouteMatch();
+    const [loading, setLoading] = useState(false);
     const [pipelines, setPipelines] = useState([]);
     const getPipelines = async () => {
+        setLoading(true);
         const result = await axios.get("/api/pipelines/view_all");
         setPipelines(result.data);
+        setLoading(false);
     };
     useEffect(() => {
         getPipelines();
-    }, [location.key]);
-
+    }, []);
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center w-full h-full">
+                <p className="mb-2">Fetching pipelines...</p>
+                <BarLoader color={"#22C55E"} loading={loading} size={80} />
+            </div>
+        );
+    }
     return (
-        <div className="grid grid-cols-4 divide-x divide-blueGray-200 bg-white h-full">
+        <div className="grid grid-cols-4 divide-x divide-blueGray-200 bg-white">
             <div>
                 <div className="p-4">
                     <h2 className="text-3xl text-blueGray-800 font-bold mb-4">

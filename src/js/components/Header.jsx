@@ -24,8 +24,8 @@ const DatabaseSelector = ({ databases, currentDatabase }) => {
         }
     }
     const truncate = string => {
-        if (string.length > 15) {
-            return `${string.slice(0, 15)}...`
+        if (string.length > 10) {
+            return `${string.slice(0, 10)}...`
         } else {
             return string;
         }
@@ -45,7 +45,7 @@ const DatabaseSelector = ({ databases, currentDatabase }) => {
     return (
         <div className="w-full relative" ref={ref}>
             <button
-                className="bg-blueGray-200 rounded-md px-4 py-2 flex items-center justify-between text-sm hover:bg-blueGray-100 transition-colors duration-300 focus:outline-none"
+                className="bg-blueGray-200 rounded-md px-4 py-2 flex items-center justify-between text-sm hover:bg-blueGray-100 transition-colors duration-300 focus:outline-none w-36"
                 onClick={() => setVisible(!visible)}
             >
                 <div className="flex items-center">

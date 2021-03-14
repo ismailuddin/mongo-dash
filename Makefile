@@ -1,4 +1,4 @@
-.PHONY: docs
+.PHONY: docs clean clean-test clean-pyc clean-build docs help build-js
 .DEFAULT_GOAL := help
 
 define BROWSER_PYSCRIPT
@@ -46,11 +46,13 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
+build-js:
+	npx webpack --mode=production
+
 release: dist ## package and upload a release
 	twine upload dist/*
 
-dist: clean ## builds source and wheel package
-	npx webpack --mode=production
+dist: build-js clean ## builds source and wheel package
 	python setup.py sdist
 	python setup.py bdist_wheel
 	ls -l dist

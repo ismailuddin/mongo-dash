@@ -1,3 +1,7 @@
+# v0.1.4
+- Cancel subscriptions and background HTTP requests upon navigating away from
+  routes
+- Pre-loaders for all routes involving large data requests
 # v0.1.3
 - Default charts to display with no time filter applied
 # v0.1.2
