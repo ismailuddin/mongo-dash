@@ -13,12 +13,9 @@ export default function Chart({
 }) {
     const { width, height, ref } = useResizeDetector();
     let mostRecentUpdate = new Date();
-    const now = new Date();
     const [plotData, setPlotData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [timeFilter, setTimeFilter] = useState(
-        now.setDate(now.getDate() - 1)
-    );
+    const [timeFilter, setTimeFilter] = useState(null);
     const [errMsg, setErrMsg] = useState(null);
     const [successMsg, setSuccessMsg] = useState(null);
 
