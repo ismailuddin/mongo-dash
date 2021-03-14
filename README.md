@@ -1,22 +1,34 @@
-# mongo_dash
-> Visualisation platform for MongoDB
+<p align="center">
+  <img width="300" src="https://github.com/ismailuddin/mongo-dash/raw/master/artwork/mongo-dash-logo.png">
+</p>
+# Mongo Dash
+> A dashboard solution for MongoDB databases.
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+![Screenshot](./artwork/screenshot.png)
+
+Visit the [website](https://mongo-dash.vercel.app/) for more details.
 
 ## Requirements
 - Python 3.6 or newer
 
 ## 🛠 Installation
-To install the package, run the following command from a terminal:
+To install the package, you can either clone the repository and run the following command:
 
 ```shell
 $   pip install .
 ```
 
+Or you can install the package from PyPI using the command:
+
+```shell
+$   pip install mongo_dash
+```
+
 
 ## 🚀 Usage
-Example usage of the packakge.
+For a quick setup, visit the [Getting started](https://mongo-dash-docs.vercel.app/docs/getting-started/first-dashboard) page on the documentation.
 
 ## 📚 Documentation
-Documentation can be built using the command `make docs`, which uses the `Makefile` and the `make` binary.
+View the [documenation](https://mongo-dash-docs.vercel.app/docs).
