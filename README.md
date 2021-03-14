@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="300" src="https://github.com/ismailuddin/mongo-dash/blob/main/artwork/mongo-dash-logo.png?raw=true">
+  <img width="300" src="https://raw.githubusercontent.com/ismailuddin/mongo-dash/main/artwork/mongo-dash-logo.png">
 </p>
 
 # Mongo Dash
@@ -7,7 +7,7 @@
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-![Screenshot](./artwork/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/ismailuddin/mongo-dash/main/artwork/screenshot.png)
 
 Visit the [website](https://mongo-dash.vercel.app/) for more details.
 

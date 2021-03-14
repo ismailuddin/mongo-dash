@@ -43,6 +43,6 @@ setup(
     keywords="",
     packages=find_packages(exclude=("tests")),
     test_suite="tests",
-    url="https://www.github.com/ismailuddin/mongo_dash",
+    url="https://www.github.com/ismailuddin/mongo-dash",
     zip_safe=False,
 )
