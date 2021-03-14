@@ -27,7 +27,14 @@ setup(
     ],
     description="Visualisation platform for MongoDB",
     install_requires=[
-        "pandas"
+        "fastapi",
+        "aiofiles",
+        "jinja2",
+        "uvicorn",
+        "motor",
+        "typer",
+        "async-exit-stack",
+        "async-generator"
     ],
     license="MIT license",
     long_description=long_description,

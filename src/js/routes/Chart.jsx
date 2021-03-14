@@ -23,40 +23,40 @@ export default function Chart({
     const [successMsg, setSuccessMsg] = useState(null);
 
     const since1hr = () => {
-        const now = new Date();
-        now.setHours(now.getHours() - 1);
+        let now = new Date();
+        now = now.setHours(now.getHours() - 1);
         setTimeFilter(now);
     }
     
     const since1day = () => {
-        const now = new Date();
-        now.setDate(now.getDate() - 1);
+        let now = new Date();
+        now = now.setDate(now.getDate() - 1);
         setTimeFilter(now);
     }
 
     const since1wk = () => {
-        const now = new Date();
-        now.setDate(now.getDate() - 7);
+        let now = new Date();
+        now = now.setDate(now.getDate() - 7);
         setTimeFilter(now);
     }
 
     const since1mo = () => {
-        const now = new Date();
-        now.setDate(now.getDate() - 28);
+        let now = new Date();
+        now = now.setDate(now.getDate() - 28);
         setTimeFilter(now);
     }
 
     const since3mo = () => {
-        const now = new Date();
-        now.setDate(now.getDate() - 84);
+        let now = new Date();
+        now = now.setDate(now.getDate() - 84);
         setTimeFilter(now);
     }
 
     const formatData = (data) => {
         const groupedData = [];
-        const uniqueKeys = [...new Set(data.map((d) => d.grouping))];
+        const uniqueKeys = [...new Set(data.map((d) => d.groupby))];
         uniqueKeys.forEach((key) => {
-            const filtered = data.filter((d) => d.grouping == key);
+            const filtered = data.filter((d) => d.groupby == key);
             groupedData.push({
                 name: key,
                 x: filtered.map((d) => d.x),

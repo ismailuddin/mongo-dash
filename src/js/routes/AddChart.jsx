@@ -55,9 +55,9 @@ export default function AddChart({ dashboardId, reloadCharts }) {
                 },
             });
             const groupedData = [];
-            const uniqueKeys = [...new Set(data.map(d => d.grouping))];
+            const uniqueKeys = [...new Set(data.map(d => d.groupby))];
             uniqueKeys.forEach(key => {
-                const filtered = data.filter(d => d.grouping == key);
+                const filtered = data.filter(d => d.groupby == key);
                 groupedData.push({
                     name: key,
                     x: filtered.map(d => d.x),

@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import PipelineStagesEditor from "../components/PipelineStagesEditor";
+import PipelinePreview from "../components/PipelinePreview";
+
 
 export default function AddPipeline({ reloadPipelines }) {
     const history = useHistory();
@@ -12,6 +14,8 @@ export default function AddPipeline({ reloadPipelines }) {
     const [collection, setCollection] = useState(null);
     const [pipelineName, setPipelineName] = useState("");
     const [pipelineStages, setPipelineStages] = useState("");
+    const [pipelineResult, setPipelineResult] = useState("");
+
 
     useEffect(() => {
         const getCollections = async () => {
@@ -41,9 +45,22 @@ export default function AddPipeline({ reloadPipelines }) {
             }
         }
     };
+    const previewPipeline = async () => {
+        try {
+            const { data } = await axios.post("/api/pipelines/run_arbitrary", {
+                name: pipelineName,
+                collection: collection,
+                stages: pipelineStages,
+            });
+            setPipelineResult(JSON.stringify(data, null, 1));
+        } catch (error) {
+            console.error(error);
+            toast.error("Error running pipeline!");
+        }
+    };
 
     return (
-        <div className="p-4">
+        <div className="p-4 bg-white">
             <h2 className="text-3xl text-blueGray-800 font-bold mb-4">
                 Add pipeline
             </h2>
@@ -72,9 +89,18 @@ export default function AddPipeline({ reloadPipelines }) {
                 value={pipelineStages}
                 onChange={(v) => setPipelineStages(v)}
             />
-            <Button.Primary onClick={registerPipeline}>
-                Register pipeline
-            </Button.Primary>
+            <div className="flex mb-4">
+                <Button.Primary onClick={registerPipeline}>
+                    Register pipeline
+                </Button.Primary>
+                <Button.Primary onClick={previewPipeline}>
+                    Preview pipeline
+                </Button.Primary>
+            </div>
+            <h4 className="text-xl text-blueGray-800 font-bold mb-4">
+                Pipeline preview
+            </h4>
+            <PipelinePreview value={pipelineResult} />
         </div>
     );
 }

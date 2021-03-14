@@ -40,7 +40,7 @@ export default function Pipelines() {
                         </Link>
                     </div>
                 </div>
-                <div className="border-t border-blueGray-200">
+                <div className="border-t border-blueGray-200 bg-white">
                     {pipelines.map((pipeline) => (
                         <NavLink
                             key={pipeline._id}
@@ -75,7 +75,7 @@ export default function Pipelines() {
                     ))}
                 </div>
             </div>
-            <div className="col-span-3 overflow-y-scroll">
+            <div className="col-span-3 h-full">
                 <Switch>
                     <Route path={`${match.path}/add`}>
                         <AddPipeline reloadPipelines={getPipelines} />
