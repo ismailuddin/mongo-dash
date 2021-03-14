@@ -16,7 +16,6 @@ setup(
     name="mongo_dash",
     author="Ismail Uddin",
     version=mongo_dash.__version__,
-    author_email="Your email",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
