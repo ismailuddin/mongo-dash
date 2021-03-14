@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="300" src="https://github.com/ismailuddin/mongo-dash/raw/master/artwork/mongo-dash-logo.png">
+  <img width="300" src="https://github.com/ismailuddin/mongo-dash/blob/main/artwork/mongo-dash-logo.png?raw=true">
 </p>
 # Mongo Dash
 > A dashboard solution for MongoDB databases.
