@@ -1,3 +1,5 @@
+# v0.1.5
+- Optimise CSS files to reduce size
 # v0.1.4
 - Cancel subscriptions and background HTTP requests upon navigating away from
   routes
