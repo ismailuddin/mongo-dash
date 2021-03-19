@@ -46,8 +46,10 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
-build-js:
+build-assets:
 	npx webpack --mode=production
+	gulp sass
+	gulp sass:tailwind
 
 release: dist ## package and upload a release
 	twine upload dist/*
