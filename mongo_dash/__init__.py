@@ -1,7 +1,7 @@
 """
-mongodb_viz
+mongo_dash
 ---
-Visualisation platform for MongoDB
+Visualisation / dashboard platform for MongoDB
 """
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"

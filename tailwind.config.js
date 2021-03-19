@@ -1,7 +1,13 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-	purge: [],
+	purge: {
+		enabled: true,
+		content: [
+			"./src/js/**/*.jsx",
+			"./monogo_dash/templates/**/*.html"
+		]
+	},
 	darkMode: 'class',
 	theme: {
 		colors: {
