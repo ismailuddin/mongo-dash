@@ -59,7 +59,7 @@ export default function Chart({
                 x: filtered.map((d) => d.x),
                 y: filtered.map((d) => d.y),
                 type: "scatter",
-                mode: "lines",
+                mode: "lines+markers",
             });
         });
         return groupedData;

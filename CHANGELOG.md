@@ -1,3 +1,5 @@
+# v0.1.6
+- Switch to displaying markers and lines on timeseries charts
 # v0.1.5
 - Optimise CSS files to reduce size
 # v0.1.4

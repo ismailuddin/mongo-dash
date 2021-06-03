@@ -54,7 +54,7 @@ build-assets:
 release: dist ## package and upload a release
 	twine upload dist/*
 
-dist: build-js clean ## builds source and wheel package
+dist: build-assets clean ## builds source and wheel package
 	python setup.py sdist
 	python setup.py bdist_wheel
 	ls -l dist
